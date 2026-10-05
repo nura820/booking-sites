@@ -52,6 +52,15 @@ jobs:
           (out / 'fonts.css').write_text(css, encoding='utf-8')
           print(len(list(out.iterdir())), 'файлов шрифтов')
           PY
+      - name: Библиотеки движения
+        run: |
+          set -e
+          mkdir -p assets/vendor
+          get() { [ -s "assets/vendor/$1" ] || curl -fsSL --retry 3 -o "assets/vendor/$1" "$2"; }
+          get gsap.min.js          "https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"
+          get ScrollTrigger.min.js "https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"
+          get lenis.min.js         "https://cdn.jsdelivr.net/npm/lenis@1.1.14/dist/lenis.min.js"
+          ls -la assets/vendor
       - name: Сохранить в репозиторий
         run: |
           git config user.name "github-actions[bot]"
