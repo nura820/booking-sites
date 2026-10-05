@@ -4,6 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Онлайн-запись: автосервис, кофейня, барбершоп</title>
+<meta name="description" content="Запись в автосервис, предзаказ кофе и запись к барберу онлайн: выберите услугу, время и оставьте телефон. Оплата на месте.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Онлайн-запись: автосервис, кофейня, барбершоп">
+<meta property="og:description" content="Выберите услугу и время, оставьте телефон. Оплата на месте.">
+<meta name="theme-color" content="#111111" id="tc">
+<meta name="format-detection" content="telephone=no">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Onest:wght@300;400;500;600;700&family=Unbounded:wght@500;700;900&display=swap" rel="stylesheet">
@@ -48,6 +54,14 @@ button{cursor:pointer;background:none;border:0;padding:0;text-align:left}
 a{color:inherit}
 [hidden]{display:none!important}
 :focus-visible{outline:2px solid var(--acc2);outline-offset:3px}
+/* Выделение текста в цвет сферы, якоря не прячутся под шапкой, заголовки без висячих слов */
+::selection{background:var(--acc);color:var(--acc-fg)}
+section[id],main[id]{scroll-margin-top:76px}
+h1,h2,h3{text-wrap:balance}
+p{text-wrap:pretty}
+/* Ссылка для клавиатуры: сразу к записи */
+.skip{position:absolute;left:var(--g);top:-80px;z-index:100;padding:12px 18px;background:var(--acc);color:var(--acc-fg);font-weight:600;border-radius:var(--r);text-decoration:none}
+.skip:focus{top:10px}
 .w{max-width:1400px;margin:0 auto;padding-inline:var(--g)}
 .ln{display:block;overflow:hidden}
 .ln>span{display:block}
@@ -493,6 +507,7 @@ body[data-n="coffee"] .fsoc a{border-radius:999px}
 </style>
 </head>
 <body data-n="auto">
+<a class="skip" href="#book">Перейти к записи</a>
 
 <header class="top">
   <div class="w">
@@ -750,7 +765,7 @@ function markTab(id,instant){
   t.style.width=on.offsetWidth+'px';t.style.transform='translateX('+on.offsetLeft+'px)';
 }
 function renderShell(){
-  document.body.setAttribute('data-n',N.id);
+  document.body.setAttribute('data-n',N.id);(function(){var t=document.getElementById('tc');if(t)t.content=getComputedStyle(document.body).backgroundColor})();
   document.title=N.brand+', онлайн-запись';
   $('#brand').textContent=N.brand;
   markTab(N.id,true);
