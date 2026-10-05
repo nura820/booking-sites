@@ -10,9 +10,8 @@
 <meta property="og:description" content="Выберите услугу и время, оставьте телефон. Оплата на месте.">
 <meta name="theme-color" content="#111111" id="tc">
 <meta name="format-detection" content="telephone=no">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Onest:wght@300;400;500;600;700&family=Unbounded:wght@500;700;900&display=swap" rel="stylesheet">
+<!-- Шрифты лежат в репозитории (assets/fonts), сайт не зависит от Google Fonts -->
+<link href="assets/fonts/fonts.css" rel="stylesheet">
 <style>
 /* Три сферы, три атмосферы. Всё различие в оформлении задаётся переменными ниже. */
 :root{
@@ -654,7 +653,7 @@ var NICHES={
   sub:'Выберите мастера и время. Кресло будет свободно к вашему приходу.',
   cta:'Записаться',cta2:'Мастера',go:'Записаться к мастеру',
   facts:[['4,9','средняя оценка'],['3','мастера'],['10:00–21:00','каждый день']],
-  media:{type:'video',src:'assets/barber-work.mp4',fb:C('barber-hero'),tag:'Работа мастера'},
+  media:{type:'video',src:'assets/barber-work.mp4',poster:'assets/barber-hero.jpg',fb:C('barber-hero'),tag:'Работа мастера'},
   tilesH:'Мастера',tilesP:'У каждого мастера свои цены. Ближайшее свободное окно указано на карточке.',
   bookH:'Запись',bookP:'Мастер, услуги, время. Займёт минуту.',
   prov:true,qty:false,open:600,close:1260,step:30,nd:7,lead:30,fixedDur:0,hasBusy:true,
@@ -775,7 +774,7 @@ function renderShell(){
   $('#sub').textContent=N.sub;$('#cta').textContent=N.cta;$('#cta2').textContent=N.cta2;
   $('#facts').innerHTML=N.facts.map(function(f){return '<li><b>'+f[0]+'</b><span>'+f[1]+'</span></li>'}).join('');
   var m=N.media,mh;
-  if(m.type==='video')mh='<img src="'+m.fb+'" alt=""><video muted loop playsinline autoplay preload="metadata" src="'+m.src+'"></video>';
+  if(m.type==='video')mh='<img src="'+(m.poster||m.fb)+'"'+(m.poster?' data-fb="'+m.fb+'"':'')+' alt=""><video muted loop playsinline autoplay preload="metadata" src="'+m.src+'"></video>';
   else mh=img([m.src,m.fb],'','',true);
   $('#media').innerHTML='<div class="mclip"><div class="mi">'+mh+'</div><i class="mwipe"></i></div><i class="mfr"></i><span class="mtag">'+m.tag+'</span>';
   var v=$('#media video');
