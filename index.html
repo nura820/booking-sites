@@ -1,0 +1,1180 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Онлайн-запись: автосервис, кофейня, барбершоп</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Onest:wght@300;400;500;600;700&family=Unbounded:wght@500;700;900&display=swap" rel="stylesheet">
+<style>
+/* Три сферы, три атмосферы. Всё различие в оформлении задаётся переменными ниже. */
+:root{
+  --g:clamp(16px,4vw,56px);
+  --body:'Onest',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --gap:clamp(12px,1.7vw,24px);
+  --err:#ff6b5e;--ok:#5fd08a;
+  --out:cubic-bezier(.16,1,.3,1);
+}
+/* АВТОСЕРВИС: закрытый ангар, графит, кислотный акцент, жёсткая сетка */
+body[data-n="auto"]{
+  --bg:#0e1011;--fg:#F1F3EE;--mut:#8b918c;--line:#272b2c;--card:#141718;
+  --acc:#C8FF2E;--acc2:#C8FF2E;--acc-fg:#0e1011;--ok:#C8FF2E;--hov:#F1F3EE;--hov-fg:#0e1011;--r:0px;
+  --disp:'Unbounded','Onest',sans-serif;--dw:700;--dls:-.02em;--dtt:uppercase;--h1:clamp(34px,6.3vw,104px);--h2:clamp(24px,3.4vw,54px);--dlh:.98;
+  background-image:linear-gradient(rgba(255,255,255,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.035) 1px,transparent 1px);background-size:88px 88px;
+}
+/* КОФЕЙНЯ: молочно-кремовый, тёплый песок, зерно бумаги */
+body[data-n="coffee"]{
+  --bg:#F1EADC;--fg:#2A2019;--mut:#7c6d5d;--line:#dbcdb6;--card:#FAF6EE;
+  --acc:#2A2019;--acc2:#A9713F;--ok:#2f8a55;--acc-fg:#F6F0E4;--hov:#A9713F;--hov-fg:#FFF8EC;--r:20px;
+  --disp:'Onest',sans-serif;--dw:300;--dls:-.045em;--dtt:none;--h1:clamp(46px,8.4vw,136px);--h2:clamp(32px,4.6vw,68px);--dlh:.96;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .36 0 0 0 0 .26 0 0 0 0 .16 0 0 0 .16 0'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+/* БАРБЕРШОП: тёмный крафт, матовая латунь, тёмное дерево */
+body[data-n="barber"]{
+  --bg:#12100e;--fg:#EFE7DA;--mut:#9c9080;--line:#2e2720;--card:#1a1613;
+  --acc:#C19A5B;--acc2:#C19A5B;--acc-fg:#12100e;--hov:#EFE7DA;--hov-fg:#12100e;--r:2px;
+  --disp:'Cormorant Garamond',Georgia,serif;--dw:600;--dls:-.015em;--dtt:none;--h1:clamp(52px,9vw,150px);--h2:clamp(38px,5.2vw,80px);--dlh:.9;
+  background-image:repeating-linear-gradient(90deg,rgba(255,255,255,.016) 0 2px,transparent 2px 9px),repeating-linear-gradient(90deg,rgba(0,0,0,.18) 0 1px,transparent 1px 173px),radial-gradient(120% 80% at 50% 0%,#1d1915 0%,#12100e 70%);
+}
+*{box-sizing:border-box;margin:0}
+html{-webkit-text-size-adjust:100%}
+html.lenis,html.lenis body{height:auto}
+.lenis.lenis-smooth{scroll-behavior:auto!important}
+body{font-family:var(--body);background-color:var(--bg);color:var(--fg);font-size:17px;line-height:1.5;-webkit-font-smoothing:antialiased;overflow-x:hidden;overflow-x:clip}
+img,video{display:block;max-width:100%}
+button,input{font:inherit;color:inherit}
+button{cursor:pointer;background:none;border:0;padding:0;text-align:left}
+a{color:inherit}
+[hidden]{display:none!important}
+:focus-visible{outline:2px solid var(--acc2);outline-offset:3px}
+.w{max-width:1400px;margin:0 auto;padding-inline:var(--g)}
+.ln{display:block;overflow:hidden}
+.ln>span{display:block}
+
+.btn{position:relative;isolation:isolate;overflow:hidden;display:inline-flex;align-items:center;justify-content:center;gap:10px;height:56px;padding:0 28px;background:var(--acc);color:var(--acc-fg);font-weight:600;font-size:17px;border-radius:var(--r);text-decoration:none;transition:color .2s,transform .15s;white-space:nowrap}
+.btn::before{content:"";position:absolute;inset:0;z-index:-1;background:var(--hov);transform:translateY(101%);transition:transform .28s var(--out)}
+body[data-n="coffee"] .btn{border-radius:999px}
+body[data-n="auto"] .btn{font-family:var(--disp);font-size:13px;letter-spacing:.02em;text-transform:uppercase}
+body[data-n="barber"] .btn{background:linear-gradient(180deg,#d0ab6c 0%,#b58d4f 55%,#a17a41 100%)}
+@media(hover:hover){.btn:not([disabled]):hover{color:var(--hov-fg)}.btn:not([disabled]):hover::before{transform:none}}
+.btn:active{transform:scale(.96)}
+.btn[disabled],body[data-n="barber"] .btn[disabled]{background:var(--line);color:var(--mut);cursor:not-allowed}
+.btn.sm{height:44px;padding:0 20px;font-size:15px}
+body[data-n="auto"] .btn.sm{font-size:11px}
+.lnk{display:inline-flex;align-items:center;min-height:44px;font-weight:500;text-decoration:underline;text-underline-offset:5px;text-decoration-thickness:1px;transition:color .15s}
+.lnk:hover{color:var(--acc2)}
+
+/* шапка */
+.top{position:sticky;top:0;z-index:50;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+.top .w{display:flex;align-items:center;justify-content:space-between;gap:14px;height:64px}
+.prog{position:absolute;left:0;right:0;bottom:-1px;height:2px;background:var(--acc2);transform:scaleX(0);transform-origin:0 50%;pointer-events:none}
+.brand{font-family:var(--disp);font-weight:var(--dw);font-size:24px;letter-spacing:var(--dls);text-transform:var(--dtt);text-decoration:none;white-space:nowrap;display:inline-flex;align-items:center;min-height:44px}
+body[data-n="auto"] .brand{font-size:17px}
+body[data-n="barber"] .brand{font-size:30px}
+.tabs{position:relative;display:flex;gap:4px;padding:4px;border:1px solid var(--line);border-radius:999px}
+body[data-n="auto"] .tabs{border-radius:0}
+.tind{position:absolute;top:4px;bottom:4px;left:0;width:0;background:var(--fg);border-radius:inherit;transition:transform .3s var(--out),width .3s var(--out);pointer-events:none}
+.tind.off{transition:none}
+.tabs button{position:relative;z-index:1;height:36px;padding:0 16px;border-radius:999px;font-size:15px;font-weight:500;color:var(--mut);transition:color .2s;text-align:center}
+.tabs button:hover{color:var(--fg)}
+.tabs button[aria-selected="true"]{color:var(--bg)}
+@media(max-width:760px){
+  .top .w{flex-wrap:wrap;height:auto;padding-block:10px}
+  .tabs{order:3;width:100%}
+  .tabs button{flex:1;height:44px;padding:0 6px;font-size:14px}
+}
+
+/* смена сферы: жёсткая монтажная склейка двумя шторками */
+.cut{position:fixed;inset:0;z-index:90;pointer-events:none;visibility:hidden;overflow:hidden}
+.cut i{position:absolute;top:0;bottom:0;left:0;width:100%}
+
+/* первый экран: у каждой сферы своя композиция на общей сетке из 12 колонок */
+.hero{position:relative;max-width:1400px;margin:0 auto;padding:clamp(24px,3.6vw,52px) var(--g) clamp(36px,5vw,72px);display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:var(--gap)}
+.htxt{display:contents}
+.hhead{position:relative;z-index:2;min-width:0}
+.hbody{min-width:0}
+.kick{color:var(--mut);font-size:16px;margin-bottom:18px}
+body[data-n="auto"] .kick{font-family:var(--disp);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--acc)}
+h1{font-family:var(--disp);font-weight:var(--dw);font-size:var(--h1);line-height:var(--dlh);letter-spacing:var(--dls);text-transform:var(--dtt)}
+h1 .ln{padding:.09em 0 .1em;margin-top:-.09em}
+body[data-n="barber"] h1 .ln:nth-child(2)>span{font-style:italic;color:var(--acc)}
+.sub{max-width:34ch;font-size:clamp(18px,1.6vw,21px);color:var(--mut);margin-top:18px}
+body[data-n="coffee"] .sub{color:#5d5044}
+body[data-n="auto"] .sub{color:#b9beb8}
+.hact{display:flex;flex-wrap:wrap;align-items:center;gap:10px 22px;margin-top:30px}
+.facts{list-style:none;padding:0;display:flex;flex-wrap:wrap;gap:14px 40px;margin-top:40px;padding-top:22px;border-top:1px solid var(--line)}
+.facts b{display:block;font-family:var(--disp);font-weight:var(--dw);font-size:clamp(22px,2.4vw,34px);letter-spacing:var(--dls);line-height:1.1;white-space:nowrap}
+.facts span{display:block;color:var(--mut);font-size:15px;line-height:1.3}
+body[data-n="auto"] .facts{gap:14px 0;border-top-color:rgba(255,255,255,.16)}
+body[data-n="auto"] .facts li{padding:0 28px 0 14px;border-left:2px solid var(--acc)}
+body[data-n="auto"] .facts b{font-size:clamp(15px,1.6vw,22px)}
+
+.media{position:relative;aspect-ratio:4/5;min-width:0}
+.mclip{position:absolute;inset:0;overflow:hidden;background:var(--card);border-radius:inherit}
+.mi{position:absolute;inset:-6% 0}
+.mi img,.mi video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.media video{opacity:0;transition:opacity .4s}
+.media video.ok{opacity:1}
+.mwipe{position:absolute;inset:0;z-index:2;background:var(--acc);transform:scaleX(0);transform-origin:100% 50%;pointer-events:none}
+.mfr{display:none;position:absolute;inset:-10px;border:1px solid var(--acc);pointer-events:none}
+.mtag{position:absolute;left:18px;bottom:16px;z-index:2;font-size:13px;color:#fff;background:rgba(0,0,0,.55);padding:4px 10px;border-radius:var(--r)}
+
+/* авто: видео на весь экран, текст поверх */
+body[data-n="auto"] .hero{max-width:none;display:flex;align-items:flex-end;min-height:clamp(560px,calc(100svh - 64px),880px);padding:0;overflow:hidden}
+body[data-n="auto"] .media{position:absolute;inset:0;aspect-ratio:auto}
+body[data-n="auto"] .mclip::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(90deg,rgba(14,16,17,.9) 0%,rgba(14,16,17,.6) 42%,rgba(14,16,17,0) 76%),linear-gradient(0deg,rgba(14,16,17,.92) 0%,rgba(14,16,17,0) 46%),linear-gradient(rgba(255,255,255,.05) 1px,transparent 1px) 0 0/88px 88px,linear-gradient(90deg,rgba(255,255,255,.05) 1px,transparent 1px) 0 0/88px 88px}
+body[data-n="auto"] .htxt{display:block;position:relative;z-index:2;width:100%;max-width:1400px;margin:0 auto;padding:120px var(--g) clamp(28px,4vw,52px)}
+body[data-n="auto"] .mtag{left:auto;right:max(var(--g),calc((100vw - 1400px)/2 + var(--g)));bottom:clamp(28px,4vw,52px);font-family:var(--disp);font-size:10px;letter-spacing:.1em;text-transform:uppercase;background:var(--acc);color:var(--acc-fg)}
+
+/* кофе: сначала набор. Лёгкий заголовок с отступом третьей строки, справа высокий кадр с подписью под волосной линией */
+body[data-n="coffee"] .hhead{grid-column:1/9;grid-row:1}
+body[data-n="coffee"] .kick{font-size:15px;margin-bottom:clamp(16px,2.6vw,38px)}
+body[data-n="coffee"] h1 .ln:nth-child(3){padding-left:.72em}
+body[data-n="coffee"] .media{grid-column:9/-1;grid-row:1/4;aspect-ratio:auto;min-height:clamp(400px,46vw,580px);border-radius:var(--r)}
+body[data-n="coffee"] .mclip{bottom:40px}
+body[data-n="coffee"] .mtag{left:0;right:0;bottom:0;height:30px;padding:9px 0 0;border-top:1px solid var(--line);border-radius:0;background:none;color:var(--mut);font-size:14px;line-height:1.4}
+body[data-n="coffee"] .hbody{grid-column:1/7;grid-row:2;padding-top:clamp(22px,3vw,44px)}
+body[data-n="coffee"] .sub{margin-top:0;font-size:clamp(18px,1.6vw,22px);line-height:1.4}
+body[data-n="coffee"] .hact{margin-top:26px}
+body[data-n="coffee"] .facts{grid-column:1/8;grid-row:3;align-self:end;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0 var(--gap);margin-top:clamp(28px,4vw,56px);padding-top:0;border-top:0}
+body[data-n="coffee"] .facts li{border-top:1px solid var(--fg);padding-top:12px}
+body[data-n="coffee"] .facts b{font-size:clamp(24px,2.7vw,40px);margin-bottom:4px}
+
+/* барбер: портрет в латунной рамке, антиква заходит на край кадра. Край затемнён, чтобы буквы читались */
+body[data-n="barber"] .media{grid-column:1/6;grid-row:1/4;align-self:start;margin:10px}
+/* рамка открыта справа: там её замыкает заголовок, линия не режет буквы */
+body[data-n="barber"] .mfr{display:block;border-right:0}
+body[data-n="barber"] .mclip::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(270deg,rgba(18,16,14,.9) 0%,rgba(18,16,14,.66) 22%,rgba(18,16,14,0) 50%),linear-gradient(0deg,rgba(18,16,14,.6) 0%,rgba(18,16,14,0) 34%)}
+body[data-n="barber"] .mtag{left:16px;bottom:12px;padding:0;background:none;color:var(--fg);font-family:var(--disp);font-style:italic;font-size:19px}
+body[data-n="barber"] .hhead{grid-column:5/-1;grid-row:1;align-self:end;padding-top:clamp(10px,3vw,44px)}
+body[data-n="barber"] .kick{color:var(--acc);font-size:15px;letter-spacing:.04em;margin-bottom:14px}
+body[data-n="barber"] h1{text-shadow:0 0 28px rgba(18,16,14,.55)}
+body[data-n="barber"] .hbody{grid-column:6/-1;grid-row:2;padding-top:clamp(20px,2.4vw,34px);display:grid;grid-template-columns:minmax(0,1fr) auto;gap:18px 40px;align-items:end}
+body[data-n="barber"] .sub,body[data-n="barber"] .hact{margin-top:0}
+body[data-n="barber"] .facts{grid-column:6/-1;grid-row:3;align-self:end;display:grid;grid-template-columns:auto auto auto;justify-content:space-between;gap:0 var(--gap);margin-top:clamp(22px,3vw,40px);padding-top:16px}
+body[data-n="barber"] .facts b{font-size:clamp(26px,2.7vw,42px);letter-spacing:0;color:var(--acc);margin-bottom:2px}
+
+@media(max-width:900px){
+  .hero{display:flex;flex-direction:column}
+  body[data-n="coffee"] .hhead{order:1}
+  body[data-n="coffee"] .media{order:2;min-height:0;aspect-ratio:4/3.7;margin-top:20px}
+  body[data-n="coffee"] .hbody{order:3;padding-top:22px}
+  body[data-n="coffee"] .facts{order:4}
+  body[data-n="coffee"] .kick{margin-bottom:14px}
+  body[data-n="barber"] .htxt{display:block}
+  body[data-n="barber"] .media{align-self:stretch;aspect-ratio:1/1}
+  body[data-n="barber"] .mclip::after{background:linear-gradient(0deg,rgba(18,16,14,.96) 0%,rgba(18,16,14,.78) 24%,rgba(18,16,14,0) 60%)}
+  body[data-n="barber"] .mtag{left:auto;right:14px;bottom:auto;top:12px}
+  body[data-n="barber"] .mfr{border-right:1px solid var(--acc);border-bottom:0}
+  body[data-n="auto"] .mtag{right:var(--g)}
+  /* подзаголовок-строка стоит над заголовком, обе строки лежат на затемнённом низу кадра */
+  body[data-n="barber"] .hhead{margin-top:calc(-58px - var(--h1));padding:0 0 0 26px}
+  body[data-n="barber"] .hbody{display:block;padding-top:18px}
+  body[data-n="barber"] .hact{margin-top:22px}
+  body[data-n="coffee"] .facts,body[data-n="barber"] .facts{display:block;align-self:stretch;margin-top:28px;padding-top:0;border-top:1px solid var(--line)}
+  body[data-n="coffee"] .facts li,body[data-n="barber"] .facts li{display:flex;justify-content:space-between;align-items:baseline;gap:16px;padding:11px 0;border-top:0;border-bottom:1px solid var(--line)}
+  body[data-n="coffee"] .facts b{font-size:21px;margin:0}
+  body[data-n="barber"] .facts b{font-size:26px;margin:0}
+  body[data-n="coffee"] .facts span,body[data-n="barber"] .facts span{text-align:right}
+  body[data-n="auto"] .hero{display:block;min-height:0}
+  body[data-n="auto"] .media{position:relative;inset:auto;aspect-ratio:5/4}
+  body[data-n="auto"] .mclip::after{background:linear-gradient(0deg,rgba(14,16,17,1) 0%,rgba(14,16,17,0) 50%),linear-gradient(rgba(255,255,255,.05) 1px,transparent 1px) 0 0/44px 44px,linear-gradient(90deg,rgba(255,255,255,.05) 1px,transparent 1px) 0 0/44px 44px}
+  body[data-n="auto"] .htxt{padding:0 var(--g) 36px;margin-top:-28px}
+  body[data-n="auto"] .mtag{bottom:auto;top:14px}
+}
+
+/* полоса «сегодня»: одна компактная строка, на телефоне 2 на 2 */
+body[data-n="auto"] .now{padding-top:clamp(16px,2vw,28px)}
+.nowbar{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border-block:1px solid var(--line)}
+body[data-n="auto"] .nowbar{border:1px solid var(--line);background:var(--card)}
+body[data-n="barber"] .nowbar{border-top-color:var(--acc)}
+.nc{display:flex;flex-direction:column;justify-content:center;gap:2px;min-height:72px;padding:12px 20px;border-left:1px solid var(--line);text-decoration:none;min-width:0}
+.nc:first-child{border-left:0;padding-left:0}
+body[data-n="auto"] .nc:first-child{padding-left:20px}
+.nc small{font-size:13px;line-height:1.35;color:var(--mut)}
+body[data-n="auto"] .nc small{font-family:var(--disp);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--acc);line-height:1.5}
+.nc b{font-size:clamp(16px,1.4vw,19px);font-weight:600;line-height:1.25}
+a.nc b{text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:4px}
+a.nc:hover b{color:var(--acc2)}
+.dot{display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--mut);margin-right:8px;vertical-align:1px}
+.dot.on{background:var(--ok);box-shadow:0 0 0 4px color-mix(in srgb,var(--ok) 22%,transparent)}
+@media(max-width:760px){
+  .nowbar{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .nc{min-height:64px;padding:10px 12px}
+  .nc:nth-child(3){border-left:0;padding-left:0}
+  body[data-n="auto"] .nc:nth-child(odd){padding-left:12px}
+  .nc:nth-child(n+3){border-top:1px solid var(--line)}
+  .nc b{font-size:15.5px}
+}
+
+/* секции */
+.sec{padding-block:clamp(48px,7vw,112px);border-top:1px solid var(--line)}
+.sec-h{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:14px 40px;margin-bottom:clamp(24px,3.4vw,48px)}
+h2{font-family:var(--disp);font-weight:var(--dw);font-size:var(--h2);line-height:1;letter-spacing:var(--dls);text-transform:var(--dtt)}
+.sec-h p{max-width:40ch;color:var(--mut)}
+
+/* плитки: у каждой сферы свой предмет */
+.tgrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:var(--gap)}
+.tile{position:relative;display:flex;flex-direction:column;width:100%;min-width:0}
+.tph{position:relative;display:block;overflow:hidden;background:var(--line)}
+.tpi{position:absolute;inset:-7% 0}
+.tpi img{width:100%;height:100%;object-fit:cover;transition:transform .5s var(--out),filter .4s}
+.tgo{position:absolute;left:0;right:0;bottom:0;padding:11px 18px;background:var(--acc);color:var(--acc-fg);font-weight:600;font-size:14px;transform:translateY(101%);transition:transform .28s var(--out)}
+.tb{display:flex;flex-direction:column;gap:6px;flex:1;min-width:0}
+.tn{display:block;font-family:var(--disp);font-weight:var(--dw);letter-spacing:var(--dls);text-transform:var(--dtt);line-height:1.1}
+.tb .rl{color:var(--mut);font-size:15px;line-height:1.4}
+.tf{display:flex;justify-content:space-between;align-items:baseline;gap:6px 12px;margin-top:auto}
+.tf b{white-space:nowrap}
+.tf>span{color:var(--mut);font-size:14px;text-align:right}
+.stars{display:flex;align-items:center;gap:8px;font-size:15px}
+.stars i{font-style:normal;color:var(--acc);letter-spacing:2px}
+.stars span{color:var(--mut)}
+
+/* авто: сплошная сетка с линейками, цена набрана крупнее всего */
+body[data-n="auto"] .tgrid{gap:1px;background:var(--line);border:1px solid var(--line)}
+body[data-n="auto"] .tile{background:var(--card);transition:background .2s}
+body[data-n="auto"] .tile::after{content:"";position:absolute;left:0;top:0;width:100%;height:3px;background:var(--acc);transform:scaleX(0);transform-origin:0 50%;transition:transform .3s var(--out)}
+body[data-n="auto"] .tph{aspect-ratio:4/3}
+body[data-n="auto"] .tpi img{filter:grayscale(1) contrast(1.1) brightness(.9)}
+body[data-n="auto"] .tgo{font-family:var(--disp);font-size:10px;letter-spacing:.08em;text-transform:uppercase}
+body[data-n="auto"] .tb{padding:18px 18px 20px;gap:8px}
+body[data-n="auto"] .tn{font-size:14px;letter-spacing:.01em;line-height:1.25;min-height:2.5em}
+body[data-n="auto"] .tf{padding-top:22px;align-items:flex-end}
+body[data-n="auto"] .tf b{font-family:var(--disp);font-weight:700;font-size:clamp(20px,1.9vw,27px);letter-spacing:-.03em;line-height:1;color:var(--acc)}
+
+/* кофе: без карточек. Кадр и строка меню: название, цена, пояснение. Колонки идут лесенкой */
+body[data-n="coffee"] .tgrid{align-items:start}
+body[data-n="coffee"] .tile:nth-child(even){margin-top:clamp(28px,4.4vw,64px)}
+body[data-n="coffee"] .tph{aspect-ratio:4/5;border-radius:var(--r)}
+body[data-n="coffee"] .tb{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 10px;align-items:baseline;padding-top:14px}
+body[data-n="coffee"] .tn{grid-column:1;grid-row:1;font-size:clamp(22px,2.2vw,32px);transition:color .2s}
+body[data-n="coffee"] .tf{grid-column:2;grid-row:1;margin:0}
+body[data-n="coffee"] .tf b{font-weight:400;font-size:clamp(16px,1.3vw,19px)}
+body[data-n="coffee"] .tf>span{display:none}
+body[data-n="coffee"] .tb .rl{grid-column:1/-1;grid-row:2}
+
+/* барбер: карточка мастера. Имя набрано по портрету, ниже оценка, три строки прайса и ближайшее окно */
+body[data-n="barber"] .tgrid{grid-template-columns:repeat(3,minmax(0,1fr))}
+body[data-n="barber"] .tile{background:linear-gradient(165deg,#25201b 0%,#1a1612 55%,#171310 100%);border:1px solid var(--line);border-radius:var(--r);box-shadow:inset 0 1px 0 rgba(255,255,255,.05);overflow:hidden;transition:border-color .25s}
+body[data-n="barber"] .tph{aspect-ratio:4/4.6}
+body[data-n="barber"] .tph::after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,rgba(18,16,14,.9),rgba(18,16,14,0) 46%);pointer-events:none}
+body[data-n="barber"] .tpi img{filter:grayscale(.55) contrast(1.05)}
+body[data-n="barber"] .tph .tn{position:absolute;left:20px;right:20px;bottom:10px;z-index:1;font-size:clamp(46px,5.2vw,78px);line-height:.9;color:var(--fg)}
+body[data-n="barber"] .tgo{display:none}
+body[data-n="barber"] .tb{padding:16px 20px 20px;gap:12px}
+.tpl{display:block;border-top:1px solid var(--line)}
+.tpl>span{display:flex;justify-content:space-between;gap:12px;padding:8px 0;border-bottom:1px solid var(--line);font-size:15.5px}
+.tpl b{font-weight:500;white-space:nowrap;font-variant-numeric:tabular-nums}
+body[data-n="barber"] .tf{flex-wrap:wrap;align-items:center;padding-top:4px}
+body[data-n="barber"] .tf b{font-family:var(--disp);font-weight:600;font-size:26px;line-height:1;color:var(--acc)}
+
+@media(hover:hover){
+  .tile:hover .tpi img{transform:scale(1.06)}
+  body[data-n="barber"] .tile:hover .tpi img,body[data-n="auto"] .tile:hover .tpi img{filter:none}
+  .tile:hover .tgo{transform:none}
+  body[data-n="auto"] .tile:hover{background:#191d20}
+  body[data-n="auto"] .tile:hover::after{transform:none}
+  body[data-n="coffee"] .tile:hover .tn{color:var(--acc2)}
+  body[data-n="barber"] .tile:hover{border-color:var(--acc)}
+}
+.tile:focus-visible .tgo{transform:none}
+@media(hover:none){.tgo{display:none}}
+@media(max-width:1100px){.tgrid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:640px){
+  .tgrid,body[data-n="barber"] .tgrid,body[data-n="auto"] .tgrid{display:flex;gap:12px;background:none;border:0;overflow-x:auto;scroll-snap-type:x mandatory;margin-inline:calc(var(--g)*-1);padding:4px var(--g);scroll-padding-inline:var(--g);scrollbar-width:none;-webkit-overflow-scrolling:touch}
+  .tgrid::-webkit-scrollbar{display:none}
+  .tile{flex:0 0 76%;scroll-snap-align:start}
+  body[data-n="auto"] .tile{border:1px solid var(--line)}
+  body[data-n="coffee"] .tile:nth-child(even){margin-top:0}
+  body[data-n="barber"] .tph .tn{font-size:56px}
+}
+
+/* запись */
+.bwrap{display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:clamp(24px,4vw,64px);align-items:start}
+@media(max-width:960px){.bwrap{grid-template-columns:minmax(0,1fr)}}
+.steps{list-style:none;padding:0;display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);gap:6px;margin-bottom:28px;counter-reset:s}
+.steps li{counter-increment:s;position:relative;padding-top:10px;color:var(--mut);font-size:14px;line-height:1.3;transition:color .2s}
+.steps li::before{content:"";position:absolute;left:0;right:0;top:0;height:3px;background:var(--line)}
+.steps li::after{content:"";position:absolute;left:0;right:0;top:0;height:3px;background:var(--acc2);transform:scaleX(0);transform-origin:0 50%;transition:transform .4s var(--out)}
+.steps li b{font-weight:600;margin-right:6px;font-variant-numeric:tabular-nums}
+.steps li b::before{content:counter(s)}
+.steps li[aria-current="step"],.steps li.dn{color:var(--fg)}
+.steps li[aria-current="step"]::after,.steps li.dn::after{transform:none}
+.steps li.dn::after{background:var(--fg)}
+.sb{display:flex;align-items:flex-start;width:100%;min-height:44px;padding-top:2px;line-height:1.3;text-align:left}
+.sb:disabled{cursor:default}
+.sb:not(:disabled){text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:4px}
+.sb:not(:disabled):hover{color:var(--acc2)}
+.panel{min-height:260px}
+.panel h3{font-size:22px;font-weight:600;margin-bottom:4px}
+.panel .lead{color:var(--mut);margin-bottom:18px}
+.grp{font-size:14px;color:var(--mut);margin:22px 0 4px}
+body[data-n="auto"] .grp{font-family:var(--disp);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--acc)}
+body[data-n="barber"] .grp{font-family:var(--disp);font-style:italic;font-size:20px;color:var(--acc)}
+.row{position:relative;isolation:isolate;display:flex;justify-content:space-between;align-items:center;gap:14px;width:100%;padding:16px 12px;border-bottom:1px solid var(--line)}
+.row::before{content:"";position:absolute;inset:0;z-index:-1;background:color-mix(in srgb,var(--acc2) 13%,transparent);box-shadow:inset 3px 0 0 var(--acc2);transform:scaleX(0);transform-origin:0 50%;transition:transform .3s var(--out)}
+.row.on::before{transform:none}
+.row .nm{font-size:19px;font-weight:500;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.row .ds{display:block;color:var(--mut);font-size:15px}
+.ld{display:none}
+body[data-n="coffee"] .ld{display:block;flex:1;min-width:16px;align-self:flex-start;margin-top:17px;border-bottom:1px dotted var(--mut);opacity:.55}
+@media(max-width:560px){body[data-n="coffee"] .ld{display:none}.row{gap:10px;padding-inline:10px}.row .rt{gap:10px}.row .nm{font-size:18px}}
+.row>span:first-child{min-width:0}
+.tag{font-size:12px;font-weight:600;font-style:normal;padding:2px 8px;border:1px solid var(--acc2);color:var(--acc2);border-radius:999px}
+body[data-n="auto"] .tag{border-radius:0}
+.row .rt{display:flex;align-items:center;gap:14px;flex-shrink:0}
+.row .rt b{font-size:19px;font-weight:600;white-space:nowrap;font-variant-numeric:tabular-nums}
+.pl{position:relative;width:44px;height:44px;border:1px solid var(--line);border-radius:var(--r);transition:background .15s,border-color .15s}
+body[data-n="coffee"] .pl{border-radius:50%}
+.pl::before,.pl::after{content:"";position:absolute;left:50%;top:50%;width:16px;height:2px;margin:-1px 0 0 -8px;background:var(--fg);transition:transform .25s var(--out),background .15s}
+.pl::after{transform:rotate(90deg)}
+button.row:hover .pl,.pl:hover{border-color:var(--acc2)}
+.on .pl,.pl.on{background:var(--acc);border-color:var(--acc)}
+.on .pl::before,.pl.on::before,.on .pl::after,.pl.on::after{background:var(--acc-fg)}
+button.row.on .pl::before{transform:rotate(45deg)}
+button.row.on .pl::after{transform:rotate(-45deg)}
+.pl.mn::after{display:none}
+.qn{min-width:30px;text-align:center;font-weight:600}
+.qty{display:flex;align-items:center;gap:2px}
+.prow{display:grid;grid-template-columns:72px 1fr auto;gap:16px;align-items:center;width:100%;padding:12px;border:1px solid var(--line);border-radius:var(--r);margin-bottom:10px;background:var(--card);transition:border-color .15s,background .15s}
+.prow:hover,.prow.on{border-color:var(--acc)}
+.prow.on{background:color-mix(in srgb,var(--acc2) 10%,var(--card))}
+.prow img{width:72px;height:72px;object-fit:cover;border-radius:var(--r)}
+.prow b{display:block;font-size:20px;font-weight:600}
+.prow .rl{color:var(--mut);font-size:15px}
+.prow .pr{text-align:right;font-size:15px;color:var(--mut);white-space:nowrap}
+.prow .pr b{font-size:17px;color:var(--fg)}
+.prow>span{min-width:0}
+@media(max-width:600px){.prow{grid-template-columns:56px minmax(0,1fr);gap:4px 14px}.prow img{width:56px;height:56px;grid-row:span 2}.prow .pr{grid-column:2;text-align:left;white-space:normal}.prow .pr br{display:none}.prow .pr b{display:inline;margin-right:8px;font-size:16px}}
+.days{display:grid;grid-template-columns:repeat(var(--nd,7),minmax(0,1fr));gap:6px}
+.day{display:flex;flex-direction:column;align-items:center;padding:9px 0;border:1px solid var(--line);border-radius:var(--r);background:var(--card);transition:background .12s,color .12s,border-color .12s}
+body[data-n="coffee"] .day,body[data-n="coffee"] .slot{border-radius:12px}
+.day span{font-size:13px;color:var(--mut)}
+.day b{font-size:21px;font-weight:600;line-height:1.2}
+.day small{font-size:12px;line-height:1.3;color:var(--mut);white-space:nowrap}
+.day small i{font-style:normal}
+@media(max-width:700px){.day small i{display:none}}
+body[data-n="coffee"] .days{max-width:420px}
+.day:hover:not([disabled]),.slot:hover{border-color:var(--acc2)}
+.day.on,.slot.on{background:var(--acc);color:var(--acc-fg);border-color:var(--acc)}
+.day.on span,.day.on small{color:var(--acc-fg)}
+.day[disabled]{opacity:.45;cursor:not-allowed;background:transparent;border-style:dashed}
+.day:active,.slot:active,.pay:active,.prow:active{transform:scale(.96)}
+.sg{font-size:14px;color:var(--mut);margin:20px 0 8px}
+.slots{display:grid;grid-template-columns:repeat(auto-fill,minmax(82px,1fr));gap:8px}
+.slot{height:46px;text-align:center;font-weight:500;border:1px solid var(--line);border-radius:var(--r);background:var(--card);font-variant-numeric:tabular-nums;transition:background .12s,color .12s,border-color .12s}
+.empty{padding:14px 18px;border:1px dashed var(--line);border-radius:var(--r);color:var(--mut);margin-top:16px}
+.empty b{display:block;color:var(--fg);font-weight:600}
+.chip{display:inline-flex;align-items:center;min-height:44px;padding:0 16px;margin:0 0 16px;border:1px solid var(--acc2);border-radius:999px;color:var(--acc2);font-weight:600;font-size:15px;transition:background .15s,color .15s}
+body[data-n="auto"] .chip{border-radius:0}
+body[data-n="barber"] .chip{border-radius:var(--r)}
+@media(hover:hover){.chip:hover{background:var(--acc2);color:var(--bg)}}
+.fld{margin-bottom:16px}
+.fld label{display:block;font-size:15px;font-weight:500;margin-bottom:6px}
+.fld input{width:100%;height:54px;padding:0 16px;background:var(--card);border:1px solid var(--line);border-radius:var(--r);font-size:17px;transition:border-color .15s,box-shadow .15s}
+body[data-n="coffee"] .fld input{border-radius:14px}
+.fld input:focus{outline:none;border-color:var(--acc2);box-shadow:0 0 0 3px color-mix(in srgb,var(--acc2) 25%,transparent)}
+.fld.bad input{border-color:var(--err)}
+.er{color:var(--err);font-size:14px;margin-top:5px}
+.pays{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin:6px 0 4px}
+.pay{display:flex;gap:12px;align-items:flex-start;padding:14px;border:1px solid var(--line);border-radius:var(--r);background:var(--card);width:100%;transition:border-color .15s}
+body[data-n="coffee"] .pay{border-radius:14px}
+.pay.on{border-color:var(--acc)}
+.pay i{flex:none;width:20px;height:20px;border:2px solid var(--mut);border-radius:50%;margin-top:2px;position:relative}
+.pay.on i{border-color:var(--acc)}
+.pay.on i::after{content:"";position:absolute;inset:3px;border-radius:50%;background:var(--acc)}
+.pay b{display:block;font-weight:600}
+.pay span{font-size:14px;color:var(--mut)}
+.hint{font-size:14px;color:var(--mut)}
+.nhint{min-height:22px;margin-top:18px;font-size:14.5px;color:var(--mut)}
+.bnav{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-top:8px}
+.bnav .btn{min-width:210px;margin-left:auto}
+@media(max-width:480px){.bnav .btn{min-width:0;flex:1}}
+.sum{position:sticky;top:92px;background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:24px}
+body[data-n="auto"] .sum{border-top:3px solid var(--acc)}
+body[data-n="barber"] .sum{background:linear-gradient(180deg,#1e1915,#161210)}
+.sum h3{font-size:19px;font-weight:600;margin-bottom:12px}
+.sum dl>div{padding:11px 0;border-top:1px solid var(--line)}
+.sum dt{font-size:14px;color:var(--mut)}
+.sum dd{font-weight:500}
+.sum dd.mt{font-weight:400;color:var(--mut)}
+.sum ul{list-style:none;padding:0}
+.sum li{display:flex;justify-content:space-between;gap:12px}
+.sum li span:last-child{white-space:nowrap;font-variant-numeric:tabular-nums}
+.sum .tt{display:flex;justify-content:space-between;align-items:baseline;border-top:1px solid var(--fg);padding-top:14px;margin-top:4px}
+.sum .tt b{font-family:var(--disp);font-weight:var(--dw);font-size:30px;letter-spacing:var(--dls);font-variant-numeric:tabular-nums}
+body[data-n="auto"] .sum .tt b{font-size:22px}
+body[data-n="coffee"] .sum .tt b{font-weight:400}
+.okb{padding:28px;border:1px solid var(--acc);border-radius:var(--r);background:var(--card)}
+.okb h3{font-family:var(--disp);font-weight:var(--dw);font-size:clamp(30px,4vw,52px);letter-spacing:var(--dls);text-transform:var(--dtt);line-height:1;margin-bottom:8px}
+.okb dl{margin:18px 0}
+.okb dl>div{display:flex;justify-content:space-between;gap:16px;padding:9px 0;border-top:1px dashed var(--line)}
+.okb dt{color:var(--mut)}
+.okb dd{text-align:right;font-weight:500}
+
+/* итог: у каждой сферы свой документ (заказ-наряд, бумажный чек, латунная карточка) */
+.sum h3{font-family:var(--disp);font-weight:var(--dw);font-size:24px;letter-spacing:var(--dls);text-transform:var(--dtt);line-height:1.1;margin-bottom:14px}
+.sum .tt b{white-space:nowrap;line-height:1}
+body[data-n="auto"] .sum h3{font-size:13px;letter-spacing:.04em}
+body[data-n="auto"] .sum .tt b{font-size:24px;color:var(--acc)}
+body[data-n="coffee"] .sum{border:0;padding:28px 26px;box-shadow:0 1px 0 var(--line),0 18px 40px -28px rgba(42,32,25,.45)}
+body[data-n="coffee"] .sum h3{font-size:26px}
+body[data-n="coffee"] .sum dl>div{border-top-style:dashed;border-top-color:#cdbd9f}
+body[data-n="barber"] .sum{background:linear-gradient(165deg,#25201b,#181411);border-color:color-mix(in srgb,var(--acc) 40%,var(--line));box-shadow:inset 0 1px 0 rgba(255,255,255,.05)}
+body[data-n="barber"] .sum h3{font-size:32px;font-style:italic;font-weight:500}
+body[data-n="barber"] .sum .tt b{font-size:40px;letter-spacing:0;color:var(--acc)}
+
+/* отзывы: только у барбершопа */
+.rvw{display:grid;grid-template-columns:minmax(0,240px) minmax(0,1fr);gap:clamp(24px,4vw,64px);align-items:start}
+.rsum b{display:block;font-family:var(--disp);font-weight:var(--dw);font-size:clamp(76px,9vw,128px);line-height:.82;color:var(--acc);margin-bottom:12px}
+.rsum p{color:var(--mut);font-size:15px;margin-top:4px}
+.rcards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--gap)}
+.rcard{display:flex;flex-direction:column;gap:14px;padding-top:18px;border-top:1px solid var(--acc)}
+.rcard blockquote{flex:1;font-family:var(--disp);font-style:italic;font-weight:500;font-size:clamp(20px,1.7vw,24px);line-height:1.25}
+.rcard footer{display:flex;justify-content:space-between;align-items:baseline;gap:10px;font-size:14px;color:var(--mut)}
+.rcard footer b{color:var(--fg);font-weight:600}
+.rcard footer em{font-style:normal;color:var(--acc)}
+.rnote{margin-top:22px;font-size:13.5px;color:var(--mut)}
+@media(max-width:900px){.rvw,.rcards{grid-template-columns:minmax(0,1fr)}.rsum{display:flex;align-items:flex-end;gap:16px}.rsum b{margin:0}}
+
+/* нижняя панель действия на телефоне */
+.mbar{display:none}
+@media(max-width:960px){
+  .mbar{display:flex;position:fixed;left:0;right:0;bottom:0;z-index:60;align-items:center;justify-content:space-between;gap:12px;padding:10px var(--g) calc(10px + env(safe-area-inset-bottom));background:var(--card);border-top:1px solid var(--line);transform:translateY(105%);visibility:hidden;pointer-events:none;transition:transform .25s var(--out),visibility 0s .25s}
+  .mbar.show{transform:none;visibility:visible;pointer-events:auto;transition:transform .25s var(--out)}
+  .mbar small{display:block;font-size:13px;color:var(--mut);line-height:1.2}
+  .mbar b{font-size:18px;font-weight:600;font-variant-numeric:tabular-nums}
+  .foot{padding-bottom:96px!important}
+}
+
+/* подвал */
+.foot{border-top:1px solid var(--line);padding-block:clamp(44px,6vw,96px) 26px}
+/* авто: сплошная кислотная плита, единственный громкий ход на странице */
+body[data-n="auto"] .foot{background:var(--acc);color:#0e1011;border-top:0;--mut:#3d4d12;--line:rgba(14,16,17,.28);--acc2:#0e1011;--ok:#0e1011}
+body[data-n="coffee"] .foot{background-color:#E6DAC4;--line:#c9b99c}
+body[data-n="barber"] .foot{background:linear-gradient(180deg,#0e0c0a,#12100e);border-top-color:var(--acc)}
+.ftop{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:20px 48px;padding-bottom:clamp(24px,3.4vw,48px);margin-bottom:clamp(24px,3vw,40px);border-bottom:1px solid var(--line)}
+.fbig{font-family:var(--disp);font-weight:var(--dw);font-size:clamp(56px,14vw,220px);line-height:.9;letter-spacing:var(--dls);text-transform:var(--dtt);overflow:hidden;padding-bottom:.08em}
+.fbig span{display:block}
+body[data-n="auto"] .fbig{font-size:clamp(36px,9vw,146px);font-weight:900}
+body[data-n="barber"] .fbig{font-style:italic;font-weight:500}
+.fcall{display:flex;flex-direction:column;gap:2px;padding-bottom:4px}
+.fcall p{font-size:14px;color:var(--mut);margin-bottom:4px}
+.fcall a{display:flex;align-items:center;gap:12px;min-height:44px;text-decoration:none}
+.fcall a:hover{text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:5px}
+.fcall .big{font-family:var(--disp);font-weight:var(--dw);font-size:clamp(26px,2.9vw,42px);letter-spacing:var(--dls);line-height:1.1;white-space:nowrap;font-variant-numeric:tabular-nums}
+body[data-n="auto"] .fcall .big{font-size:clamp(17px,2vw,28px)}
+body[data-n="coffee"] .fcall .big{font-weight:400}
+.fcols{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:32px var(--gap)}
+@media(max-width:900px){.fcols{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:520px){.fcols{grid-template-columns:minmax(0,1fr)}}
+.fcols small{display:block;font-size:13.5px;color:var(--mut);margin-bottom:6px}
+.fcols h4{font-family:var(--disp);font-weight:var(--dw);font-size:24px;letter-spacing:var(--dls);line-height:1.1;margin-bottom:12px}
+body[data-n="auto"] .fcols h4{font-size:12px;letter-spacing:.06em;text-transform:uppercase}
+body[data-n="coffee"] .fcols h4{font-weight:400;font-size:22px}
+body[data-n="barber"] .fcols h4{font-size:30px;font-style:italic;font-weight:500}
+.fl{list-style:none;padding:0;display:flex;flex-direction:column;gap:8px}
+.fl li{display:flex;gap:10px;align-items:flex-start}
+.foot svg{flex:none;width:18px;height:18px;margin-top:4px;stroke:var(--acc2);fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.fcall svg{width:22px;height:22px;margin:0}
+.fl .st{display:block;font-size:14.5px;color:var(--mut)}
+.fl .st .dot{width:7px;height:7px;margin-right:6px}
+.fsoc{flex-direction:row;flex-wrap:wrap;gap:8px}
+.fsoc a{display:inline-flex;align-items:center;height:44px;padding:0 16px;border:1px solid var(--line);border-radius:var(--r);font-size:15px;font-weight:500;text-decoration:none;transition:background .2s,color .2s,border-color .2s}
+body[data-n="coffee"] .fsoc a{border-radius:999px}
+@media(hover:hover){
+  .fsoc a:hover{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+  body[data-n="auto"] .fsoc a:hover{background:#0e1011;color:var(--acc);border-color:#0e1011}
+}
+.fbot{display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px 30px;margin-top:clamp(32px,4vw,56px);padding-top:18px;border-top:1px solid var(--line);color:var(--mut);font-size:14px}
+
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body data-n="auto">
+
+<header class="top">
+  <div class="w">
+    <a class="brand" href="#top" id="brand"></a>
+    <nav class="tabs" id="tabs" role="tablist" aria-label="Сфера"></nav>
+    <a class="btn sm" href="#book" id="topcta">Записаться</a>
+  </div>
+  <div class="prog" id="prog" aria-hidden="true"></div>
+</header>
+
+<main id="top">
+  <section class="hero" id="hero">
+    <div class="media" id="media"></div>
+    <div class="htxt">
+      <div class="hhead">
+        <p class="kick ln"><span id="kick"></span></p>
+        <h1 id="h1"></h1>
+      </div>
+      <div class="hbody">
+        <p class="sub ln"><span id="sub"></span></p>
+        <div class="hact" id="hact"><a class="btn" href="#book" id="cta"></a><a class="lnk" href="#tiles" id="cta2"></a></div>
+      </div>
+      <ul class="facts" id="facts"></ul>
+    </div>
+  </section>
+
+  <section class="now" aria-label="Сегодня"><div class="w"><div class="nowbar rv" id="nowbar"></div></div></section>
+
+  <section class="sec" id="tiles" style="border-top:0">
+    <div class="w">
+      <div class="sec-h rv"><h2 id="tilesH"></h2><p id="tilesP"></p></div>
+      <div class="tgrid" id="tgrid"></div>
+    </div>
+  </section>
+
+  <section class="sec" id="book">
+    <div class="w">
+      <div class="sec-h rv"><h2 id="bookH"></h2><p id="bookP"></p></div>
+      <div class="bwrap rv">
+        <div class="bmain">
+          <ol class="steps" id="steps"></ol>
+          <div class="panel" id="panel"></div>
+          <p class="nhint" id="nhint" aria-live="polite"></p>
+          <div class="bnav" id="bnav"><button class="lnk" id="bback">Назад</button><button class="btn" id="bnext"></button></div>
+        </div>
+        <aside class="sum" id="sum" aria-label="Ваш заказ"></aside>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec" id="rev" hidden>
+    <div class="w">
+      <div class="sec-h rv"><h2 id="revH"></h2><p id="revP"></p></div>
+      <div class="rvw rv" id="revB"></div>
+    </div>
+  </section>
+</main>
+
+<footer class="foot"><div class="w" id="foot"></div></footer>
+
+<div class="mbar" id="mbar"><div><small id="mbs"></small><b id="mbb"></b></div><button class="btn sm" id="mbn"></button></div>
+<div class="cut" id="cut" aria-hidden="true"><i></i><i></i></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/lenis@1.1.14/dist/lenis.min.js"></script>
+<script>
+(function(){
+'use strict';
+var $=function(s,r){return (r||document).querySelector(s)};
+var $$=function(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s))};
+var RM=!!(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches);
+var G=!!window.gsap&&!RM;
+var ST=G&&!!window.ScrollTrigger;
+if(window.gsap&&window.ScrollTrigger)gsap.registerPlugin(ScrollTrigger);
+
+/* Часы филиала: s(день недели, 0 = воскресенье) возвращает [открытие, закрытие] в минутах или null для выходного.
+   Онлайн-запись идёт в первый филиал списка, по его часам считаются свободные окна и полоса «сегодня». */
+/* ====== МЕДИА ======
+   Положите свои файлы в папку assets рядом с index.html, имена указаны ниже.
+   Пока файла нет, показывается запасное фото (Unsplash или сгенерированное). */
+function U(id){return 'https://images.unsplash.com/photo-'+id+'?auto=format&fit=crop&w=1400&q=80'}
+function C(id){return 'https://res.cloudinary.com/iamslwk5/image/upload/w_1200,q_auto,f_auto/demo-site/'+id+'.jpg'}
+
+var NICHES={
+ auto:{
+  tab:'Автосервис',brand:'Гараж 7',kick:'Автосервис в Астане',h1:['Быстрый','пит-стоп','для города'],
+  sub:'Диагностика, масло, шины и геометрия. Выберите время онлайн, бокс будет ждать вас.',
+  cta:'Записаться в бокс',cta2:'Услуги и цены',go:'Добавить в запись',
+  facts:[['4','бокса'],['12 мес','гарантия на работы'],['7 дней','в неделю, без выходных']],
+  media:{type:'video',src:'assets/car-drift.mp4',fb:U('1552615526-40e47a79f9d7'),tag:'Бокс 02'},
+  tilesH:'Популярные работы',tilesP:'Цены фиксированные. Если понадобятся запчасти, мастер согласует их до начала работ.',
+  bookH:'Запись в бокс',bookP:'Три шага. Предоплата не нужна.',
+  prov:false,qty:false,open:540,close:1260,step:30,nd:7,lead:30,fixedDur:0,hasBusy:true,car:true,
+  steps:['items','time','contact'],names:{items:'Услуги',time:'Дата и время',contact:'Контакты'},
+  itemsLead:'Отметьте, что нужно сделать. Можно несколько работ.',sumItems:'Работы',sumTime:'Когда',
+  cash:'Наличными в сервисе',done:'Вы записаны',no:'Запись',
+  items:{
+   diag:{n:'Компьютерная диагностика',d:60,t:'Считывание ошибок и проверка систем',p:8000,img:['assets/auto-diag.jpg',U('1615906655593-ad0386982a0f')]},
+   oil:{n:'Замена масла и фильтра',d:45,t:'Масло клиента или наше, сброс интервала',p:12000,img:['assets/auto-oil.jpg',U('1702146713858-8e7d1cc29fe8')]},
+   brake:{n:'Замена колодок',d:90,t:'Передняя или задняя ось',p:14000},
+   tire:{n:'Шиномонтаж',d:60,t:'Сезонная смена, четыре колеса, балансировка',p:15000,img:['assets/auto-tire.jpg',U('1723099971299-3789db53604c')]},
+   align:{n:'Развал-схождение',d:60,t:'Стенд 3D, распечатка углов',p:18000,img:['assets/auto-align.jpg',U('1637640125496-31852f042a60')]},
+   wash:{n:'Комплексная мойка',d:30,t:'Кузов и салон',p:6000},
+   polish:{n:'Полировка кузова',d:180,t:'Удаление мелких царапин, защитный слой',p:45000}},
+  order:['diag','oil','brake','tire','align','wash','polish'],
+  cats:[{n:'Обслуживание',k:['diag','oil','brake']},{n:'Колёса',k:['tire','align']},{n:'Кузов',k:['wash','polish']}],
+  feat:['diag','oil','tire','align'],pop:{oil:1},
+  branches:[{n:'Левый берег',a:'ул. Примерная, 7',h:'Пн–Сб 9:00–21:00, Вс 10:00–18:00',s:function(d){return d===0?[600,1080]:[540,1260]}},{n:'Правый берег',a:'пр. Образцовый, 21',h:'Ежедневно 9:00–20:00',s:function(){return [540,1200]}}],
+  phone:'+7 700 000 00 02',email:'hello@garage7.example'
+ },
+ coffee:{
+  tab:'Кофейня',brand:'Крема',kick:'Спешелти-кофейня в Астане',h1:['Кофе','готов','к приходу'],
+  sub:'Соберите заказ заранее. Мы приготовим его к выбранной минуте, без очереди.',
+  cta:'Собрать заказ',cta2:'Меню',go:'Добавить в заказ',
+  facts:[['15 мин','до готовности'],['3','сорта зерна недели'],['8:00–21:00','каждый день']],
+  media:{type:'img',src:'assets/coffee-hero.png',fb:U('1760175445000-0e01e193d1cd'),tag:'Капучино, зерно недели'},
+  tilesH:'Чаще всего берут',tilesP:'Зерно обжариваем каждую неделю. Альтернативное молоко без доплаты.',
+  bookH:'Предзаказ',bookP:'Заберёте сами в удобное время.',
+  prov:false,qty:true,open:480,close:1260,step:15,nd:2,lead:15,fixedDur:15,hasBusy:false,
+  steps:['items','time','contact'],names:{items:'Меню',time:'Время',contact:'Контакты'},
+  itemsLead:'Добавьте напитки и еду. Количество меняется плюсом и минусом.',sumItems:'Заказ',sumTime:'Заберёте',
+  cash:'Наличными на кассе',done:'Заказ принят',no:'Заказ',
+  items:{
+   esp:{n:'Эспрессо',t:'Двойной, 60 мл',p:900},
+   amer:{n:'Американо',t:'250 мл',p:1100},
+   cap:{n:'Капучино',t:'Плотная пенка, 250 мл',p:1500,img:['assets/coffee-cap.jpg',U('1680381792123-676305af82d8')]},
+   latte:{n:'Латте',t:'Мягкий вкус, 350 мл',p:1600,img:['assets/coffee-latte.jpg',U('1586792106950-8f02ebb373c1')]},
+   flat:{n:'Флэт уайт',t:'Двойной эспрессо и молоко',p:1700,img:['assets/coffee-flat.jpg',U('1622088910062-91b0190513a5')]},
+   filt:{n:'Фильтр-кофе',t:'Зерно недели, 300 мл',p:1300,img:['assets/coffee-filter.jpg',U('1608552265232-3a1e3feb0271')]},
+   cocoa:{n:'Какао',t:'Горячий шоколад, 300 мл',p:1500},
+   matcha:{n:'Матча-латте',t:'Церемониальная матча, 350 мл',p:1900},
+   croi:{n:'Круассан',t:'Сливочный, из печи',p:1200},
+   cake:{n:'Чизкейк',t:'Классический, кусок',p:1900},
+   sand:{n:'Сэндвич с индейкой',t:'Тёплый, на чиабатте',p:2400}},
+  order:['esp','amer','cap','latte','flat','filt','cocoa','matcha','croi','cake','sand'],
+  cats:[{n:'Кофе',k:['esp','amer','cap','latte','flat','filt']},{n:'Не кофе',k:['cocoa','matcha']},{n:'Выпечка и еда',k:['croi','cake','sand']}],
+  feat:['cap','flat','latte','filt'],pop:{cap:1},
+  branches:[{n:'Есиль',a:'пр. Примерный, 10',h:'Ежедневно 8:00–21:00',s:function(){return [480,1260]}},{n:'Сарыарка',a:'ул. Образцовая, 4',h:'Пн–Пт 7:30–20:00, Сб–Вс 9:00–20:00',s:function(d){return d>=1&&d<=5?[450,1200]:[540,1200]}}],
+  phone:'+7 700 000 00 01',email:'hello@crema.example'
+ },
+ barber:{
+  tab:'Барбершоп',brand:'Чернило',kick:'Барбершоп в Астане',h1:['Стрижка.','Борода.','Вовремя.'],
+  sub:'Выберите мастера и время. Кресло будет свободно к вашему приходу.',
+  cta:'Записаться',cta2:'Мастера',go:'Записаться к мастеру',
+  facts:[['4,9','средняя оценка'],['3','мастера'],['10:00–21:00','каждый день']],
+  media:{type:'video',src:'assets/barber-work.mp4',fb:C('barber-hero'),tag:'Работа мастера'},
+  tilesH:'Мастера',tilesP:'У каждого мастера свои цены. Ближайшее свободное окно указано на карточке.',
+  bookH:'Запись',bookP:'Мастер, услуги, время. Займёт минуту.',
+  prov:true,qty:false,open:600,close:1260,step:30,nd:7,lead:30,fixedDur:0,hasBusy:true,
+  steps:['prov','items','time','contact'],names:{prov:'Мастер',items:'Услуги',time:'Дата и время',contact:'Контакты'},
+  itemsLead:'Можно выбрать несколько услуг.',sumItems:'Услуги',sumTime:'Когда',
+  cash:'Наличными в барбершопе',done:'Вы записаны',no:'Запись',
+  items:{
+   cut:{n:'Мужская стрижка',d:45,t:'Ножницы и машинка, мытьё головы, укладка'},
+   fade:{n:'Фейд',d:60,t:'Плавный переход, окантовка, укладка'},
+   both:{n:'Стрижка и борода',d:75,t:'Полный образ за один визит'},
+   beard:{n:'Борода',d:30,t:'Моделирование, горячее полотенце, масло'},
+   shave:{n:'Королевское бритьё',d:40,t:'Опасная бритва и горячие полотенца'},
+   kids:{n:'Детская стрижка',d:40,t:'Для гостей до 12 лет'},
+   style:{n:'Укладка',d:20,t:'Стайлинг и фиксация'}},
+  order:['cut','fade','both','beard','shave','kids','style'],
+  cats:[{n:'Стрижки',k:['cut','fade','kids']},{n:'Борода и бритьё',k:['beard','shave']},{n:'Комплекс',k:['both']},{n:'Укладка',k:['style']}],
+  provs:[
+   {id:'t',n:'Тимур',r:'Старший барбер, 9 лет в профессии',rate:'5,0',rev:214,pop:'both',img:['assets/barber-m1.jpg',C('barber-m1')],pr:{cut:7000,fade:8000,both:11500,beard:4500,shave:6000,style:2500}},
+   {id:'a',n:'Арман',r:'Барбер, фейды и современные формы',rate:'4,9',rev:167,pop:'fade',img:['assets/barber-m2.jpg',C('barber-m2')],pr:{cut:5500,fade:6500,both:9000,beard:3500,kids:4500,style:2000}},
+   {id:'d',n:'Данияр',r:'Барбер, борода и опасная бритва',rate:'4,8',rev:98,pop:'cut',img:['assets/barber-m3.jpg',C('barber-m3')],pr:{cut:4000,fade:5000,both:7000,beard:3000,shave:4000,kids:3500,style:1500}}],
+  revH:'Гости о мастерах',revP:'Общая оценка складывается из оценок мастеров на карточках выше.',
+  rev:{avg:'4,9',items:[
+   {n:'Нурлан А.',m:'Тимур',d:'неделю назад',t:'Хожу к Тимуру второй год. Стрижка держит форму шесть недель, борода всегда ровная.'},
+   {n:'Ерлан М.',m:'Арман',d:'3 недели назад',t:'Попросил фейд по фото. Арман сделал аккуратнее, чем на фото, и показал, как укладывать дома.'},
+   {n:'Асхат К.',m:'Данияр',d:'месяц назад',t:'Бритьё опасной бритвой без раздражения. На вечер пятницы записывайтесь за неделю, окна разбирают.'}]},
+  branches:[{n:'Есиль',a:'ул. Примерная, 1',h:'Ежедневно 10:00–21:00',s:function(){return [600,1260]}},{n:'Алматинский район',a:'пр. Образцовый, 15',h:'Вт–Вс 11:00–21:00, Пн выходной',s:function(d){return d===1?null:[660,1260]}}],
+  phone:'+7 700 000 00 00',email:'hello@chernilo.example'
+ }
+};
+Object.keys(NICHES).forEach(function(k){NICHES[k].id=k});
+var N=NICHES.auto,NSL=0,S;
+var WD=['вс','пн','вт','ср','чт','пт','сб'],MO=['янв','фев','мар','апр','мая','июн','июл','авг','сен','окт','ноя','дек'];
+var base=new Date();base.setHours(0,0,0,0);
+var days=[];for(var i=0;i<7;i++){var dd=new Date(base);dd.setDate(base.getDate()+i);days.push(dd)}
+function fresh(){return {step:0,mid:null,sel:{},di:0,t:null,name:'',phone:'',car:'',pay:'cash',err:{},done:false,ticket:0}}
+
+/* ====== утилиты ====== */
+function money(n){return String(n).replace(/\B(?=(\d{3})+(?!\d))/g,' ')+' ₸'}
+function fmtDur(m){var h=Math.floor(m/60),r=m%60;return (h?h+' ч':'')+(h&&r?' ':'')+(r?r+' мин':'')}
+function two(n){return (n<10?'0':'')+n}
+function fmtMin(x){return two(Math.floor(x/60))+':'+two(x%60)}
+function fmtT(k){return fmtMin(N.open+k*N.step)}
+function esc(s){return String(s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+function plur(n,f){var a=n%10,b=n%100;return f[a===1&&b!==11?0:(a>=2&&a<=4&&(b<10||b>=20)?1:2)]}
+var OKN=['окно','окна','окон'];
+function img(pair,alt,cls,eager){return '<img src="'+pair[0]+'" data-fb="'+pair[1]+'" alt="'+esc(alt||'')+'"'+(cls?' class="'+cls+'"':'')+(eager?'':' loading="lazy" decoding="async"')+'>'}
+document.addEventListener('error',function(e){
+  var t=e.target;
+  if(t&&t.tagName==='IMG'&&t.getAttribute('data-fb')){var fb=t.getAttribute('data-fb');t.removeAttribute('data-fb');t.src=fb}
+},true);
+function prov(id){var p=N.provs||[];for(var i=0;i<p.length;i++)if(p[i].id===id)return p[i];return null}
+function dayShort(di){var d=days[di];return di===0?'Сегодня':di===1?'Завтра':WD[d.getDay()]+', '+d.getDate()+' '+MO[d.getMonth()]}
+function dayFull(di){var d=days[di];return WD[d.getDay()]+', '+d.getDate()+' '+MO[d.getMonth()]}
+function dayKey(di){var d=days[di];return d.getFullYear()*372+d.getMonth()*31+d.getDate()}
+function nowMin(){var n=new Date();return n.getHours()*60+n.getMinutes()}
+function pid(){return N.prov?(S.mid||'t'):'x'}
+/* Занятость демонстрационная, но правдоподобная: заняты пары соседних окон, около четверти дня.
+   Прежняя формула шла с шагом в три окна и не оставляла места услугам дольше часа. */
+function hsh(a,b,c){var x=(a*374761393+b*668265263+c*2147483647)|0;x=Math.imul(x^(x>>>13),1274126177);return ((x^(x>>>16))>>>0)%100}
+function busy(p,di,k){return N.hasBusy&&hsh(dayKey(di),k>>1,p.charCodeAt(0))<24}
+function hours(b,di){return b.s(days[di].getDay())}
+function slotOk(p,di,k,dur){
+  var c=Math.max(1,Math.ceil(dur/N.step)),st=N.open+k*N.step,r=hours(N.branches[0],di);
+  if(k+c>NSL)return false;
+  if(!r||st<r[0]||st+c*N.step>r[1])return false;
+  for(var j=0;j<c;j++)if(busy(p,di,k+j))return false;
+  if(di===0&&st<nowMin()+N.lead)return false;
+  return true;
+}
+function nextWin(p,d,from){for(var di=from||0;di<N.nd;di++)for(var k=0;k<NSL;k++)if(slotOk(p,di,k,d||45))return {di:di,k:k};return null}
+function freeCount(p,di,d){var c=0;for(var k=0;k<NSL;k++)if(slotOk(p,di,k,d))c++;return c}
+function brState(b){
+  var r=hours(b,0),n=nowMin();
+  if(!r)return {on:false,today:'выходной',txt:'Сегодня выходной'};
+  var today=fmtMin(r[0])+'–'+fmtMin(r[1]);
+  if(n<r[0])return {on:false,today:today,txt:'Откроемся в '+fmtMin(r[0])};
+  if(n<r[1])return {on:true,today:today,txt:'Открыто до '+fmtMin(r[1])};
+  return {on:false,today:today,txt:'Сейчас закрыто'};
+}
+function q(k){return S.sel[k]||0}
+function keys(){return N.order.filter(function(k){return q(k)>0})}
+function count(){var c=0;keys().forEach(function(k){c+=q(k)});return c}
+function dur(){if(N.fixedDur)return N.fixedDur;var s=0;keys().forEach(function(k){s+=N.items[k].d*q(k)});return s}
+function price(k){if(N.prov){var m=prov(S.mid);return m&&m.pr[k]!=null?m.pr[k]:null}return N.items[k].p}
+function total(){var s=0;keys().forEach(function(k){s+=(price(k)||0)*q(k)});return s}
+function minAll(){var v=1e9;for(var k in N.items)v=Math.min(v,N.items[k].p);return v}
+function cutFrom(){var v=1e9;N.provs.forEach(function(m){v=Math.min(v,m.pr.cut)});return v}
+function fixSel(){if(!N.prov)return;var m=prov(S.mid);if(!m)return;Object.keys(S.sel).forEach(function(k){if(m.pr[k]==null)delete S.sel[k]})}
+function fixTime(){if(S.t!=null&&!slotOk(pid(),S.di,S.t,Math.max(dur(),N.step)))S.t=null}
+function key(){return N.steps[S.step]}
+function whenTxt(){return N.fixedDur?dayShort(S.di)+', к '+fmtT(S.t):dayFull(S.di)+', '+fmtT(S.t)+'–'+fmtMin(N.open+S.t*N.step+dur())}
+function listTxt(){return keys().map(function(k){return N.items[k].n+(q(k)>1?' × '+q(k):'')}).join(', ')}
+
+/* ====== отрисовка ====== */
+var IC={
+ pin:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s7-6.2 7-11.5A7 7 0 0 0 5 9.5C5 14.800 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg>',
+ clock:'<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>',
+ phone:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h4l2 5-2.500 1.500a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z"/></svg>',
+ mail:'<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>'
+};
+/* вкладки строятся один раз, индикатор переезжает сразу по нажатию */
+$('#tabs').innerHTML='<span class="tind off" id="tind"></span>'+Object.keys(NICHES).map(function(k){return '<button role="tab" data-tab="'+k+'" aria-selected="false">'+NICHES[k].tab+'</button>'}).join('');
+function markTab(id,instant){
+  var on=null;
+  $$('#tabs [data-tab]').forEach(function(b){var s=b.getAttribute('data-tab')===id;b.setAttribute('aria-selected',String(s));if(s)on=b});
+  var t=$('#tind');if(!on||!t)return;
+  t.classList.toggle('off',!!instant);
+  t.style.width=on.offsetWidth+'px';t.style.transform='translateX('+on.offsetLeft+'px)';
+}
+function renderShell(){
+  document.body.setAttribute('data-n',N.id);
+  document.title=N.brand+', онлайн-запись';
+  $('#brand').textContent=N.brand;
+  markTab(N.id,true);
+  $('#topcta').textContent=N.qty?'Заказать':'Записаться';
+  $('#kick').textContent=N.kick;
+  $('#h1').innerHTML=N.h1.map(function(l){return '<span class="ln"><span>'+l+'</span></span>'}).join('');
+  $('#sub').textContent=N.sub;$('#cta').textContent=N.cta;$('#cta2').textContent=N.cta2;
+  $('#facts').innerHTML=N.facts.map(function(f){return '<li><b>'+f[0]+'</b><span>'+f[1]+'</span></li>'}).join('');
+  var m=N.media,mh;
+  if(m.type==='video')mh='<img src="'+m.fb+'" alt=""><video muted loop playsinline autoplay preload="metadata" src="'+m.src+'"></video>';
+  else mh=img([m.src,m.fb],'','',true);
+  $('#media').innerHTML='<div class="mclip"><div class="mi">'+mh+'</div><i class="mwipe"></i></div><i class="mfr"></i><span class="mtag">'+m.tag+'</span>';
+  var v=$('#media video');
+  if(v){v.addEventListener('loadeddata',function(){v.classList.add('ok');var p=v.play();if(p&&p.catch)p.catch(function(){})});}
+  /* полоса «сегодня»: всё считается из часов филиала, расписания и прайса */
+  var b0=N.branches[0],st=brState(b0),w=null,wd=N.fixedDur||45;
+  if(N.prov)N.provs.forEach(function(p){var x=nextWin(p.id,wd);if(x&&(!w||x.di<w.di||(x.di===w.di&&x.k<w.k)))w=x});
+  else w=nextWin('x',wd);
+  $('#nowbar').innerHTML=
+    '<div class="nc"><small>'+b0.n+' · '+st.today+'</small><b><i class="dot'+(st.on?' on':'')+'"></i>'+st.txt+'</b></div>'+
+    '<a class="nc" href="#book"><small>'+(N.qty?'Приготовим к':'Ближайшее окно')+'</small><b>'+(w?dayShort(w.di)+', '+fmtT(w.k):'На неделю окон нет')+'</b></a>'+
+    '<div class="nc"><small>'+(N.prov?'Мужская стрижка':'Цены')+'</small><b>от '+money(N.prov?cutFrom():minAll())+'</b></div>'+
+    '<div class="nc"><small>Оплата на месте</small><b>Наличные или Kaspi</b></div>';
+
+  $('#tilesH').textContent=N.tilesH;$('#tilesP').textContent=N.tilesP;
+  $('#bookH').textContent=N.bookH;$('#bookP').textContent=N.bookP;
+  var g='';
+  if(N.prov){
+    N.provs.forEach(function(p){
+      var pw=nextWin(p.id);
+      g+='<button class="tile" data-master="'+p.id+'"><span class="tph"><span class="tpi">'+img(p.img,p.n,'',true)+'</span><span class="tn">'+p.n+'</span></span><span class="tb"><span class="rl">'+p.r+'</span>'+
+        '<span class="stars"><i aria-hidden="true">★★★★★</i><b>'+p.rate+'</b><span>'+p.rev+' отзывов</span></span>'+
+        '<span class="tpl">'+['fade','both','beard'].map(function(k){return '<span>'+N.items[k].n+'<b>'+money(p.pr[k])+'</b></span>'}).join('')+'</span>'+
+        '<span class="tf"><b>Стрижка от '+money(p.pr.cut)+'</b><span>'+(pw?'Окно: '+dayShort(pw.di).toLowerCase()+', '+fmtT(pw.k):'')+'</span></span></span></button>';
+    });
+  }else{
+    N.feat.forEach(function(k){
+      var it=N.items[k];
+      g+='<button class="tile" data-feat="'+k+'"><span class="tph"><span class="tpi">'+img(it.img,it.n,'',true)+'</span><span class="tgo" aria-hidden="true">'+N.go+'</span></span><span class="tb"><span class="tn">'+it.n+'</span><span class="rl">'+it.t+'</span>'+
+        '<span class="tf"><b>'+money(it.p)+'</b><span>'+(it.d?fmtDur(it.d):'')+'</span></span></span></button>';
+    });
+  }
+  $('#tgrid').innerHTML=g;
+  $('#steps').innerHTML=N.steps.map(function(s,i){return '<li><button class="sb" data-goto="'+i+'" disabled><b></b>'+N.names[s]+'</button></li>'}).join('');
+
+  /* отзывы есть только у барбершопа; число отзывов равно сумме по карточкам мастеров */
+  var rs=$('#rev');rs.hidden=!N.rev;
+  if(N.rev){
+    var cnt=0;N.provs.forEach(function(p){cnt+=p.rev});
+    $('#revH').textContent=N.revH;$('#revP').textContent=N.revP;
+    $('#revB').innerHTML='<div class="rsum"><b>'+N.rev.avg+'</b><div><div class="stars"><i aria-hidden="true">★★★★★</i></div><p>'+cnt+' '+plur(cnt,['отзыв','отзыва','отзывов'])+' о трёх мастерах</p></div></div>'+
+      '<div><div class="rcards">'+N.rev.items.map(function(r){return '<figure class="rcard"><blockquote>'+r.t+'</blockquote><footer><span><b>'+r.n+'</b>, мастер <em>'+r.m+'</em></span><span>'+r.d+'</span></footer></figure>'}).join('')+'</div>'+
+      '<p class="rnote">Это демо: имена, отзывы и оценки вымышлены.</p></div>';
+  }
+
+  var tel=N.phone.replace(/[^+\d]/g,'');
+  $('#foot').innerHTML='<div class="ftop"><div class="fbig"><span>'+N.brand+'</span></div>'+
+    '<div class="fcall"><p>'+(N.qty?'Заказ по телефону и онлайн':'Запись по телефону и онлайн')+'</p><a class="big" href="tel:'+tel+'">'+IC.phone+N.phone+'</a><a href="mailto:'+N.email+'">'+IC.mail+N.email+'</a></div></div>'+
+    '<div class="fcols">'+
+    N.branches.map(function(b){var bs=brState(b);return '<div><small>Филиал</small><h4>'+b.n+'</h4><ul class="fl"><li>'+IC.pin+'<span>Астана, '+b.a+'</span></li><li>'+IC.clock+'<span>'+b.h+'<span class="st"><i class="dot'+(bs.on?' on':'')+'"></i>'+bs.txt+'</span></span></li></ul></div>'}).join('')+
+    '<div><small>Оплата</small><h4>На месте</h4><ul class="fl"><li><span>'+N.cash+' или через Kaspi, если он подключён. Предоплата не нужна.</span></li></ul></div>'+
+    '<div><small>Соцсети</small><h4>Мы на связи</h4><ul class="fl fsoc"><li><a href="https://instagram.com/" target="_blank" rel="noopener">Instagram</a></li><li><a href="https://t.me/" target="_blank" rel="noopener">Telegram</a></li><li><a href="https://wa.me/'+tel.replace('+','')+'" target="_blank" rel="noopener">WhatsApp</a></li><li><a href="https://2gis.kz/astana" target="_blank" rel="noopener">2ГИС</a></li></ul></div>'+
+    '</div><div class="fbot"><span>© '+new Date().getFullYear()+' '+N.brand+'</span><span>Демо-версия. Название, адреса, телефон, отзывы и оценки вымышлены.</span></div>';
+}
+
+var PANEL={};
+PANEL.prov=function(){
+  var h='<h3>Выберите мастера</h3><p class="lead">Цены зависят от мастера.</p>';
+  N.provs.forEach(function(p){
+    var w=nextWin(p.id);
+    h+='<button class="prow'+(S.mid===p.id?' on':'')+'" data-pick="'+p.id+'">'+img(p.img,'','',true)+'<span><b>'+p.n+'</b><span class="rl">'+p.r+'</span><span class="stars"><i aria-hidden="true">★</i>'+p.rate+'<span>'+p.rev+' отзывов</span></span></span>'+
+      '<span class="pr"><b>Стрижка от '+money(p.pr.cut)+'</b><br>'+(w?dayShort(w.di)+', '+fmtT(w.k):'')+'</span></button>';
+  });
+  return h;
+};
+PANEL.items=function(){
+  var m=N.prov?prov(S.mid):null;
+  var h='<h3>'+N.names.items+(m?', мастер '+m.n:'')+'</h3><p class="lead">'+N.itemsLead+'</p>';
+  N.cats.forEach(function(c){
+    var rows='';
+    c.k.forEach(function(k){
+      var p=price(k);if(p==null)return;
+      var s=N.items[k],n=q(k),popular=N.prov?(m&&m.pop===k):!!(N.pop&&N.pop[k]);
+      var left='<span><span class="nm">'+s.n+(popular?'<em class="tag">Чаще берут</em>':'')+'</span><span class="ds">'+s.t+(s.d?', '+fmtDur(s.d):'')+'</span></span><i class="ld" aria-hidden="true"></i>';
+      if(N.qty){
+        rows+='<div class="row'+(n?' on':'')+'">'+left+'<span class="rt"><b>'+money(p)+'</b><span class="qty">'+
+          (n?'<button class="pl mn" data-qty="'+k+'" data-d="-1" aria-label="Убрать: '+s.n+'"></button><span class="qn">'+n+'</span>':'')+
+          '<button class="pl'+(n?' on':'')+'" data-qty="'+k+'" data-d="1" aria-label="Добавить: '+s.n+'"></button></span></span></div>';
+      }else{
+        rows+='<button class="row'+(n?' on':'')+'" data-svc="'+k+'" aria-pressed="'+(n>0)+'">'+left+'<span class="rt"><b>'+money(p)+'</b><span class="pl" aria-hidden="true"></span></span></button>';
+      }
+    });
+    if(rows)h+='<div class="grp">'+c.n+'</div>'+rows;
+  });
+  return h;
+};
+PANEL.time=function(){
+  var du=Math.max(dur(),N.step);
+  var h='<h3>'+N.names.time+'</h3><p class="lead">'+(N.fixedDur?'Выберите, к какому времени приготовить заказ.':'Длительность: '+fmtDur(du)+'.')+' Под датой указано, сколько окон свободно.</p>';
+  var fw=nextWin(pid(),du,0);
+  if(S.t==null&&fw)h+='<button class="chip" data-jump="'+fw.di+':'+fw.k+'">'+(N.qty?'Как можно скорее':'Ближайшее окно')+': '+dayShort(fw.di).toLowerCase()+', '+fmtT(fw.k)+'</button>';
+  h+='<div class="days" style="--nd:'+N.nd+'">';
+  for(var i=0;i<N.nd;i++){
+    var d=days[i],c=freeCount(pid(),i,du);
+    h+='<button class="day'+(S.di===i?' on':'')+'" data-day="'+i+'" aria-pressed="'+(S.di===i)+'" aria-label="'+dayFull(i)+', '+(c?c+' '+plur(c,OKN):'окон нет')+'"'+(c?'':' disabled')+'><span>'+(i===0?'сегодня':WD[d.getDay()])+'</span><b>'+d.getDate()+'</b><small>'+(c?c+'<i> '+plur(c,OKN)+'</i>':'нет<i> окон</i>')+'</small></button>';
+  }
+  h+='</div>';
+  var gr=[{n:'Утро',a:0,b:720},{n:'День',a:720,b:1020},{n:'Вечер',a:1020,b:1500}],any=false;
+  gr.forEach(function(g){
+    var s='';
+    for(var k=0;k<NSL;k++){var st=N.open+k*N.step;if(st<g.a||st>=g.b||!slotOk(pid(),S.di,k,du))continue;s+='<button class="slot'+(S.t===k?' on':'')+'" data-slot="'+k+'" aria-pressed="'+(S.t===k)+'">'+fmtT(k)+'</button>'}
+    if(s){any=true;h+='<div class="sg">'+g.n+'</div><div class="slots">'+s+'</div>'}
+  });
+  if(!any){
+    var nw=nextWin(pid(),du,S.di+1)||fw;
+    h+='<div class="empty"><b>На '+dayFull(S.di)+' свободных окон нет.</b>'+(nw?'<button class="lnk" data-jump="'+nw.di+':'+nw.k+'">Ближайшее окно: '+dayShort(nw.di).toLowerCase()+', '+fmtT(nw.k)+'</button>':'На ближайшую неделю окон нет. Позвоните: <a href="tel:'+N.phone.replace(/[^+\d]/g,'')+'">'+N.phone+'</a>')+'</div>';
+  }
+  return h;
+};
+PANEL.contact=function(){
+  var e=S.err;
+  return '<h3>Контакты</h3><p class="lead">Напомним о визите и сообщим, если что-то изменится.</p><form id="cf" novalidate>'+
+   '<div class="fld'+(e.name?' bad':'')+'"><label for="fn">Имя</label><input id="fn" autocomplete="given-name" value="'+esc(S.name)+'" placeholder="Как к вам обращаться"'+(e.name?' aria-invalid="true" aria-describedby="fn-e"':'')+'>'+(e.name?'<div class="er" id="fn-e">'+e.name+'</div>':'')+'</div>'+
+   '<div class="fld'+(e.phone?' bad':'')+'"><label for="fp">Телефон</label><input id="fp" type="tel" inputmode="tel" autocomplete="tel" value="'+esc(S.phone)+'" placeholder="+7 (700) 000-00-00"'+(e.phone?' aria-invalid="true" aria-describedby="fp-e"':'')+'>'+(e.phone?'<div class="er" id="fp-e">'+e.phone+'</div>':'')+'</div>'+
+   (N.car?'<div class="fld"><label for="fc">Автомобиль <span class="hint">(по желанию)</span></label><input id="fc" value="'+esc(S.car)+'" placeholder="Марка, модель, госномер"></div>':'')+
+   '<div class="fld"><label>Оплата</label><div class="pays">'+
+   '<button type="button" class="pay'+(S.pay==='cash'?' on':'')+'" data-pay="cash" aria-pressed="'+(S.pay==='cash')+'"><i></i><span><b>'+N.cash+'</b><span>Оплата на месте</span></span></button>'+
+   '<button type="button" class="pay'+(S.pay==='kaspi'?' on':'')+'" data-pay="kaspi" aria-pressed="'+(S.pay==='kaspi')+'"><i></i><span><b>Kaspi</b><span>Если у бизнеса подключён Kaspi Pay</span></span></button></div></div>'+
+   '<p class="hint">Предоплаты нет. Это демо: данные никуда не отправляются.</p></form>';
+};
+PANEL.done=function(){
+  var m=N.prov?prov(S.mid):null;
+  return '<div class="okb"><h3>'+N.done+'</h3><p class="hint">'+N.no+' № '+S.ticket+'</p><dl>'+
+   (m?'<div><dt>Мастер</dt><dd>'+m.n+'</dd></div>':'')+
+   '<div><dt>'+N.sumItems+'</dt><dd>'+listTxt()+'</dd></div><div><dt>'+N.sumTime+'</dt><dd>'+whenTxt()+'</dd></div>'+
+   '<div><dt>Где</dt><dd>'+N.branches[0].n+', '+N.branches[0].a+'</dd></div><div><dt>Гость</dt><dd>'+esc(S.name)+'</dd></div><div><dt>Оплата</dt><dd>'+(S.pay==='cash'?'Наличными':'Kaspi')+'</dd></div>'+
+   '<div><dt>Итого</dt><dd>'+money(total())+'</dd></div></dl><button class="btn" data-again="1">'+(N.qty?'Новый заказ':'Новая запись')+'</button></div>';
+};
+var lastTotal=0,seen={},sumTw=null;
+function renderSum(){
+  var m=N.prov?prov(S.mid):null,ks=keys(),tot=total(),h='<h3>'+(N.qty?'Ваш заказ':'Ваша запись')+'</h3><dl>';
+  if(N.prov)h+='<div><dt>Мастер</dt><dd'+(m?'':' class="mt"')+'>'+(m?m.n:'Не выбран')+'</dd></div>';
+  h+='<div><dt>'+N.sumItems+'</dt><dd'+(ks.length?'':' class="mt"')+'>'+(ks.length?'<ul>'+ks.map(function(k){return '<li data-k="'+k+'"><span>'+N.items[k].n+(q(k)>1?' × '+q(k):'')+'</span><span>'+money(price(k)*q(k))+'</span></li>'}).join('')+'</ul>':'Пока пусто')+'</dd></div>';
+  h+='<div><dt>'+N.sumTime+'</dt><dd'+(S.t==null?' class="mt"':'')+'>'+(S.t==null?'Не выбрано':whenTxt())+'</dd></div>';
+  h+='</dl><div class="tt"><span>Итого</span><b>'+money(tot)+'</b></div>';
+  $('#sum').innerHTML=h;
+  if(G){
+    /* сумма досчитывается, новая строка въезжает: видно, что выбор учтён */
+    if(sumTw)sumTw.kill();
+    if(tot!==lastTotal){
+      var o={v:lastTotal},el=$('#sum .tt b');
+      el.textContent=money(lastTotal);
+      sumTw=gsap.to(o,{v:tot,duration:.35,ease:'power3.out',onUpdate:function(){el.textContent=money(Math.round(o.v/100)*100)},onComplete:function(){el.textContent=money(tot)}});
+    }
+    var fr=$$('#sum li[data-k]').filter(function(li){return !seen[li.getAttribute('data-k')]});
+    if(fr.length)gsap.fromTo(fr,{x:-14,opacity:0},{x:0,opacity:1,duration:.3,ease:'power4.out',clearProps:'transform,opacity'});
+  }
+  lastTotal=tot;seen={};ks.forEach(function(k){seen[k]=1});
+}
+function navOk(){var k=key();return k==='prov'?!!S.mid:k==='items'?count()>0:k==='time'?S.t!=null:true}
+var NEED={auto:'Отметьте хотя бы одну работу, тогда откроется выбор времени.',coffee:'Добавьте в заказ хотя бы одну позицию.',barber:'Отметьте хотя бы одну услугу.'};
+function navHint(){var k=key();return navOk()?'':k==='prov'?'Выберите мастера: у каждого свои цены и своё расписание.':k==='items'?NEED[N.id]:k==='time'?'Выберите время, чтобы продолжить.':''}
+function renderNav(){
+  var k=key(),nx=$('#bnext'),bk=$('#bback'),nh=$('#nhint');
+  $('#bnav').hidden=S.done;nh.hidden=S.done;
+  bk.hidden=S.step===0;
+  nx.disabled=!navOk();
+  nx.textContent=k==='contact'?(N.qty?'Оформить заказ':'Записаться'):'Далее';
+  nh.textContent=navHint();
+  $$('#steps li').forEach(function(li,i){
+    if(i===S.step&&!S.done)li.setAttribute('aria-current','step');else li.removeAttribute('aria-current');
+    li.className=(i<S.step||S.done)?'dn':'';
+    /* пройденные шаги можно открыть заново, вперёд перескочить нельзя */
+    var sb=$('.sb',li),back=i<S.step&&!S.done;
+    sb.disabled=!back;
+    if(back)sb.setAttribute('aria-label','Вернуться к шагу «'+N.names[N.steps[i]]+'»');else sb.removeAttribute('aria-label');
+  });
+  mbarUpdate();
+}
+function renderPanel(anim,dir){
+  var p=$('#panel');
+  p.innerHTML=S.done?PANEL.done():PANEL[key()]();
+  renderSum();renderNav();
+  if(anim&&G){
+    if(S.done){
+      gsap.fromTo('.okb',{clipPath:'inset(0% 0% 100% 0%)'},{clipPath:'inset(0% 0% 0% 0%)',duration:.45,ease:'power4.out',clearProps:'clipPath'});
+      gsap.fromTo('.okb>*,.okb dl>div',{y:14,opacity:0},{y:0,opacity:1,duration:.4,ease:'power4.out',stagger:{amount:.12},clearProps:'transform,opacity'});
+    }else{
+      gsap.fromTo(p.children,{x:26*(dir||1),opacity:0},{x:0,opacity:1,duration:.4,ease:'power4.out',stagger:{amount:.1},clearProps:'transform,opacity'});
+    }
+  }
+  if(ST)refreshSoon();
+}
+function setStep(n){
+  var dir=n<S.step?-1:1;
+  S.step=n;
+  if(key()==='time'){
+    fixTime();
+    if(S.t==null){var du=Math.max(dur(),N.step);for(var di=S.di;di<N.nd;di++){var f=false;for(var k=0;k<NSL;k++)if(slotOk(pid(),di,k,du)){f=true;break}if(f){S.di=di;break}}}
+  }
+  renderPanel(true,dir);
+}
+function pop(el){if(G&&el)gsap.fromTo(el,{scale:.88},{scale:1,duration:.3,ease:'back.out(3)',clearProps:'transform'})}
+
+/* ====== нижняя панель на телефоне ====== */
+var navVis=false,heroVis=true,inBook=false;
+function mbarUpdate(){
+  var bar=$('#mbar');if(!bar||!S)return;
+  var c=count();
+  bar.classList.toggle('show',!S.done&&!navVis&&!heroVis);
+  $('#mbs').textContent=c?'Выбрано: '+c:(N.qty?'Предзаказ без очереди':'Онлайн-запись');
+  $('#mbb').textContent=c?money(total()):'Без предоплаты';
+  var b=$('#mbn');
+  if(inBook){b.textContent=$('#bnext').textContent;b.disabled=!navOk()}
+  else{b.textContent=N.qty?'Заказать':'Записаться';b.disabled=false}
+}
+if('IntersectionObserver' in window){
+  new IntersectionObserver(function(en){navVis=en[en.length-1].isIntersecting;mbarUpdate()}).observe($('#bnav'));
+  new IntersectionObserver(function(en){heroVis=en[en.length-1].isIntersecting;mbarUpdate()}).observe($('#hact'));
+  new IntersectionObserver(function(en){inBook=en[en.length-1].isIntersecting;mbarUpdate()},{rootMargin:'0px 0px -55% 0px'}).observe($('#book'));
+}else{heroVis=false}
+
+/* ====== движение ====== */
+var lenis=null;
+if(window.Lenis&&!RM){
+  try{
+    lenis=new Lenis({lerp:.18,wheelMultiplier:1,smoothWheel:true,syncTouch:false});
+    if(window.ScrollTrigger)lenis.on('scroll',ScrollTrigger.update);
+    if(window.gsap){gsap.ticker.add(function(t){lenis.raf(t*1000)});gsap.ticker.lagSmoothing(0)}
+    else{(function raf(t){lenis.raf(t);requestAnimationFrame(raf)})(0)}
+  }catch(e){lenis=null}
+}
+function scrollToEl(el,now){
+  if(!el)return;
+  var off=-($('.top').offsetHeight+12);
+  if(lenis&&window.gsap&&!now){
+    /* свой твин вместо lenis.scrollTo: его не обрывает недавний обычный скролл пальцем или клавишами */
+    var max=Math.max(0,document.documentElement.scrollHeight-window.innerHeight);
+    var o={y:window.pageYOffset||0},to=Math.max(0,Math.min(max,o.y+el.getBoundingClientRect().top+off));
+    if(goTw)goTw.kill();
+    goTw=gsap.to(o,{y:to,duration:.6,ease:'power3.out',onUpdate:function(){lenis.scrollTo(o.y,{immediate:true,force:true})},onComplete:function(){goTw=null}});
+  }
+  else if(lenis)lenis.scrollTo(el,{offset:off,immediate:true,force:true});
+  else el.scrollIntoView({behavior:RM||now?'auto':'smooth',block:'start'});
+}
+var goTw=null;
+['wheel','touchstart','keydown'].forEach(function(ev){window.addEventListener(ev,function(){if(goTw){goTw.kill();goTw=null}},{passive:true})});
+var rfT=0;
+/* пересчёт позиций только когда скролл стоит, чтобы не сбивать прокрутку к записи */
+function refreshSoon(){clearTimeout(rfT);rfT=setTimeout(function(){if(!ST)return;if(goTw||(lenis&&lenis.isScrolling)){refreshSoon();return}ScrollTrigger.refresh()},350)}
+
+/* Вход на первый экран: сначала объект (0.5 с, power4.out), и только после полной остановки вылетает текст. */
+var introTl=null;
+function intro(){
+  if(!G)return;
+  if(introTl)introTl.kill();
+  var m='#media',clip='#media .mclip',pic='#media .mi>*',P={ease:'power4.out'};
+  var tl=introTl=gsap.timeline({defaults:P});
+  if(N.id==='auto'){
+    /* машина влетает боком и выравнивается, кислотная шторка срывается с кадра */
+    tl.fromTo(m,{xPercent:58,skewX:-14},{xPercent:0,skewX:0,duration:.5,clearProps:'transform'},0)
+      .fromTo(pic,{scale:1.3,xPercent:-6},{scale:1,xPercent:0,duration:.5,clearProps:'transform'},0)
+      .fromTo('#media .mwipe',{scaleX:1},{scaleX:0,duration:.4,ease:'power3.inOut'},.1);
+  }else if(N.id==='coffee'){
+    /* чашка поднимается из-под маски */
+    tl.fromTo(m,{yPercent:26,rotation:4},{yPercent:0,rotation:0,duration:.5,clearProps:'transform'},0)
+      .fromTo(clip,{clipPath:'inset(100% 0% 0% 0% round 20px)'},{clipPath:'inset(0% 0% 0% 0% round 20px)',duration:.5,clearProps:'clipPath'},0)
+      .fromTo(pic,{scale:1.2},{scale:1,duration:.5,clearProps:'transform'},0);
+  }else{
+    /* кадр раскрывается от центра, как створки, затем садится латунная рамка */
+    tl.fromTo(clip,{clipPath:'inset(0% 50% 0% 50%)'},{clipPath:'inset(0% 0% 0% 0%)',duration:.5,clearProps:'clipPath'},0)
+      .fromTo(pic,{scale:1.22},{scale:1,duration:.5,clearProps:'transform'},0)
+      .fromTo('#media .mfr',{scale:.94,opacity:0},{scale:1,opacity:1,duration:.4,clearProps:'transform,opacity'},.1);
+  }
+  tl.fromTo('#media .mtag',{opacity:0},{opacity:1,duration:.2,clearProps:'opacity'},.3)
+    .fromTo('.htxt h1 .ln>span',{yPercent:125},{yPercent:0,duration:.45,stagger:.05,immediateRender:true,clearProps:'transform'},.5)
+    .fromTo('.htxt p.ln>span',{y:40,opacity:0},{y:0,opacity:1,duration:.45,stagger:.1,immediateRender:true,clearProps:'transform,opacity'},.5)
+    .fromTo('.facts',{opacity:0},{opacity:1,duration:.3,immediateRender:true,clearProps:'opacity'},.68)
+    .fromTo('.hact,.facts li',{y:16,opacity:0},{y:0,opacity:1,duration:.4,stagger:.04,immediateRender:true,clearProps:'transform,opacity'},.68);
+}
+
+/* Привязка к скроллу: параллакс медиа и линия прогресса. Контент они не прячут. */
+function scrubs(){
+  if(!ST)return;
+  ScrollTrigger.getAll().forEach(function(t){t.kill()});
+  gsap.fromTo('#media .mi',{yPercent:-5},{yPercent:5,ease:'none',scrollTrigger:{trigger:'#hero',start:'top top',end:'bottom top',scrub:true}});
+  $$('.tpi').forEach(function(el){
+    gsap.fromTo(el,{yPercent:-5},{yPercent:5,ease:'none',scrollTrigger:{trigger:el.parentNode,start:'top bottom',end:'bottom top',scrub:true}});
+  });
+  gsap.fromTo('#prog',{scaleX:0},{scaleX:1,ease:'none',scrollTrigger:{start:0,end:'max',scrub:true}});
+  ScrollTrigger.refresh();
+}
+/* Появления по скроллу включаются только после первого реального скролла и только для того,
+   что ещё ниже экрана. Пока человек не скроллил или если скрипты не загрузились, всё видно. */
+var armed=false,io=null;
+function disarm(){armed=false;if(io){io.disconnect();io=null}if(G)gsap.set('.rv',{clearProps:'transform,opacity'})}
+function arm(){
+  if(armed||!G||!('IntersectionObserver' in window))return;
+  armed=true;
+  var vh=window.innerHeight;
+  io=new IntersectionObserver(function(en){
+    var n=0;
+    en.forEach(function(e){
+      if(!e.isIntersecting)return;
+      io.unobserve(e.target);
+      gsap.to(e.target._t,{y:0,yPercent:0,opacity:1,duration:.45,delay:(n++)*.06,ease:'power4.out',overwrite:true,clearProps:'transform,opacity'});
+    });
+  },{rootMargin:'0px 0px -6% 0px'});
+  $$('.rv,.tile,.rcard,.fcall,.fcols>div').forEach(function(el){
+    if(el.getBoundingClientRect().top<vh)return;
+    el._t=el;gsap.set(el,{y:40,opacity:0});io.observe(el);
+  });
+  var fb=$('.fbig');
+  if(fb&&fb.getBoundingClientRect().top>=vh){fb._t=fb.firstChild;gsap.set(fb._t,{yPercent:110});io.observe(fb)}
+}
+window.addEventListener('scroll',function(){if(!armed&&!switching&&(window.pageYOffset||0)>4)arm()},{passive:true});
+
+/* Смена сферы: монтажная склейка. Шторки закрывают экран за 0.2 с, под ними меняется всё,
+   шторки уходят, и одновременно въезжает главный объект. Затухания нет. */
+var CUT={auto:['#C8FF2E','#0e1011'],coffee:['#D8C6A6','#F1EADC'],barber:['#1a1512','#1a1512']};
+var switching=false;
+function apply(id){
+  disarm();
+  N=NICHES[id];NSL=Math.floor((N.close-N.open)/N.step);S=fresh();lastTotal=0;seen={};
+  renderShell();renderPanel(false);
+  if(lenis)lenis.scrollTo(0,{immediate:true,force:true});else window.scrollTo(0,0);
+  heroVis=true;mbarUpdate();
+  intro();scrubs();
+}
+function setNiche(id,first){
+  if(first||!G){apply(id);return}
+  if(switching)return;switching=true;
+  markTab(id);
+  var c=CUT[id],cut=$('#cut'),a=cut.children[0],b=cut.children[1];
+  gsap.killTweensOf([a,b]);
+  gsap.set(cut,{visibility:'visible'});
+  var tl=gsap.timeline({onComplete:function(){gsap.set(cut,{visibility:'hidden'});switching=false}});
+  function swap(){apply(id)}
+  if(id==='barber'){
+    /* две тёмные створки сходятся в центре и расходятся */
+    gsap.set(a,{left:'0%',width:'50.2%',background:c[0],skewX:0,yPercent:0,xPercent:-101,boxShadow:'inset -1px 0 0 #C19A5B'});
+    gsap.set(b,{left:'49.8%',width:'50.2%',background:c[1],skewX:0,yPercent:0,xPercent:101,boxShadow:'inset 1px 0 0 #C19A5B'});
+    tl.to([a,b],{xPercent:0,duration:.22,ease:'power3.in'}).add(swap)
+      .to(a,{xPercent:-101,duration:.34,ease:'power4.out'},'>.03').to(b,{xPercent:101,duration:.34,ease:'power4.out'},'<');
+  }else if(id==='coffee'){
+    /* две плашки поднимаются снизу и уходят вверх */
+    gsap.set([a,b],{left:'0%',width:'100%',skewX:0,xPercent:0,yPercent:101,boxShadow:'none'});
+    gsap.set(a,{background:c[0]});gsap.set(b,{background:c[1]});
+    tl.to(a,{yPercent:0,duration:.2,ease:'power3.in'}).to(b,{yPercent:0,duration:.2,ease:'power3.in'},.05).add(swap)
+      .to(b,{yPercent:-101,duration:.32,ease:'power4.out'},'>.03').to(a,{yPercent:-101,duration:.32,ease:'power4.out'},'<.04');
+  }else{
+    /* косые лезвия пролетают слева направо */
+    gsap.set([a,b],{left:'-25%',width:'150%',skewX:-14,yPercent:0,xPercent:-105,boxShadow:'none'});
+    gsap.set(a,{background:c[0]});gsap.set(b,{background:c[1]});
+    tl.to(a,{xPercent:0,duration:.2,ease:'power3.in'}).to(b,{xPercent:0,duration:.2,ease:'power3.in'},.05).add(swap)
+      .to(b,{xPercent:105,duration:.32,ease:'power4.out'},'>.03').to(a,{xPercent:105,duration:.32,ease:'power4.out'},'<.04');
+  }
+}
+
+/* ====== действия ====== */
+function submit(){
+  var e={},d=S.phone.replace(/\D/g,'');
+  if(S.name.trim().length<2)e.name='Введите имя, хотя бы две буквы';
+  if(d.length!==11)e.phone='Введите номер полностью: +7 и ещё 10 цифр';
+  S.err=e;
+  if(e.name||e.phone){
+    renderPanel(false);var el=$(e.name?'#fn':'#fp');
+    if(el){el.focus();if(G)gsap.fromTo(el.parentNode,{x:-8},{x:0,duration:.4,ease:'elastic.out(1.2,.3)',clearProps:'transform'})}
+    return;
+  }
+  S.ticket=1000+Math.floor(Math.random()*9000);S.done=true;renderPanel(true);scrollToEl($('#book'));
+}
+function next(){if(key()==='contact')submit();else if(navOk())setStep(S.step+1)}
+document.addEventListener('click',function(e){
+  var t=e.target,b;
+  if((b=t.closest('[data-tab]'))){if(b.getAttribute('data-tab')!==N.id)setNiche(b.getAttribute('data-tab'));return}
+  if(t.closest('#mbn')){if(inBook&&!S.done){if(key()==='contact'){scrollToEl($('#bnav'))}else{next();scrollToEl($('#book'))}}else scrollToEl($('#book'));return}
+  if((b=t.closest('a[href^="#"]'))){var tg=$(b.getAttribute('href'));if(tg){e.preventDefault();scrollToEl(tg)}return}
+  if((b=t.closest('[data-master]'))){S.done=false;S.mid=b.getAttribute('data-master');fixSel();setStep(N.steps.indexOf('items'));scrollToEl($('#book'));return}
+  if((b=t.closest('[data-feat]'))){S.done=false;var fk=b.getAttribute('data-feat');if(!q(fk))S.sel[fk]=1;setStep(N.steps.indexOf('items'));scrollToEl($('#book'));return}
+  if((b=t.closest('[data-pick]'))){S.mid=b.getAttribute('data-pick');fixSel();fixTime();renderPanel(false);pop($('.prow.on img'));return}
+  if((b=t.closest('[data-svc]'))){var k=b.getAttribute('data-svc');if(q(k))delete S.sel[k];else S.sel[k]=1;fixTime();b.classList.toggle('on',q(k)>0);b.setAttribute('aria-pressed',String(q(k)>0));renderSum();renderNav();pop($('.pl',b));return}
+  if((b=t.closest('[data-qty]'))){var qk=b.getAttribute('data-qty'),n=Math.max(0,Math.min(9,q(qk)+(+b.getAttribute('data-d'))));if(n)S.sel[qk]=n;else delete S.sel[qk];renderPanel(false);var pb=$('[data-qty="'+qk+'"][data-d="1"]');pop(pb);if(pb&&pb.focus)pb.focus({preventScroll:true});return}
+  if((b=t.closest('[data-day]'))){S.di=+b.getAttribute('data-day');fixTime();renderPanel(false);pop($('.day.on'));if(G)gsap.fromTo('.slot',{y:10,opacity:0},{y:0,opacity:1,duration:.3,ease:'power4.out',stagger:{amount:.12},clearProps:'transform,opacity'});return}
+  if((b=t.closest('[data-slot]'))){S.t=+b.getAttribute('data-slot');renderPanel(false);pop($('.slot.on'));return}
+  if((b=t.closest('[data-jump]'))){var jp=b.getAttribute('data-jump').split(':');S.di=+jp[0];S.t=+jp[1];renderPanel(false);pop($('.slot.on'));return}
+  if((b=t.closest('[data-goto]'))){var gi=+b.getAttribute('data-goto');if(gi<S.step&&!S.done)setStep(gi);return}
+  if((b=t.closest('[data-pay]'))){S.pay=b.getAttribute('data-pay');renderPanel(false);pop($('.pay.on i'));return}
+  if(t.closest('[data-again]')){S=fresh();renderPanel(true,-1);return}
+  if(t.closest('#bnext')){next();return}
+  if(t.closest('#bback')){if(S.step>0)setStep(S.step-1);return}
+});
+/* ошибка у поля снимается, как только значение стало верным */
+function fieldOk(id){
+  var inp=$('#'+id);if(!inp)return;
+  var f=inp.closest('.fld'),er=$('.er',f);
+  if(er)er.parentNode.removeChild(er);
+  f.classList.remove('bad');inp.removeAttribute('aria-invalid');inp.removeAttribute('aria-describedby');
+}
+document.addEventListener('input',function(e){
+  var el=e.target;
+  if(el.id==='fn'){S.name=el.value;if(S.err.name&&S.name.trim().length>=2){delete S.err.name;fieldOk('fn')}}
+  else if(el.id==='fc')S.car=el.value;
+  else if(el.id==='fp'){
+    var d=el.value.replace(/\D/g,'');
+    if(d[0]==='7'||d[0]==='8')d=d.slice(1);
+    d=d.slice(0,10);
+    var o=d?'+7 ('+d.slice(0,3)+(d.length>3?') '+d.slice(3,6):'')+(d.length>6?'-'+d.slice(6,8):'')+(d.length>8?'-'+d.slice(8,10):''):'';
+    el.value=o;S.phone=o;
+    if(S.err.phone&&d.length===10){delete S.err.phone;fieldOk('fp')}
+  }
+});
+document.addEventListener('submit',function(e){e.preventDefault();if(e.target.id==='cf')submit()});
+/* стрелки влево и вправо переключают вкладки с клавиатуры */
+$('#tabs').addEventListener('keydown',function(e){
+  if(e.key!=='ArrowRight'&&e.key!=='ArrowLeft')return;
+  var bs=$$('#tabs [data-tab]'),i=bs.indexOf(document.activeElement);if(i<0)return;
+  var nb=bs[(i+(e.key==='ArrowRight'?1:bs.length-1))%bs.length];nb.focus();nb.click();
+});
+window.addEventListener('resize',function(){markTab(N.id,true)});
+if(document.fonts&&document.fonts.ready)document.fonts.ready.then(function(){markTab(N.id,true);if(ST)refreshSoon()});
+
+setNiche('auto',true);
+})();
+</script>
+</body>
+</html>
