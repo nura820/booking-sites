@@ -1169,8 +1169,12 @@ document.addEventListener('input',function(e){
   if(el.id==='fn'){S.name=el.value;if(S.err.name&&S.name.trim().length>=2){delete S.err.name;fieldOk('fn')}}
   else if(el.id==='fc')S.car=el.value;
   else if(el.id==='fp'){
-    var d=el.value.replace(/\D/g,'');
-    if(d[0]==='7'||d[0]==='8')d=d.slice(1);
+    /* «+7» в начале поля ставит сама маска: эту семёрку отбрасываем.
+       Набранные 8 или 7 считаем кодом страны, только когда цифр стало 11,
+       иначе первая цифра номера терялась бы при наборе с клавиатуры */
+    var raw=el.value,d=raw.replace(/\D/g,'');
+    if(/^\s*\+\s*7/.test(raw)||/^7 \(/.test(raw))d=d.slice(1);
+    if(d.length===11&&(d[0]==='7'||d[0]==='8'))d=d.slice(1);
     d=d.slice(0,10);
     var o=d?'+7 ('+d.slice(0,3)+(d.length>3?') '+d.slice(3,6):'')+(d.length>6?'-'+d.slice(6,8):'')+(d.length>8?'-'+d.slice(8,10):''):'';
     el.value=o;S.phone=o;
