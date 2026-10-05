@@ -1,0 +1,62 @@
+# Скачивает фото и шрифты в репозиторий, чтобы сайт не зависел от чужих серверов
+# и чтобы ночные проверки видели страницу с настоящими картинками и шрифтами.
+name: Скачать фото и шрифты
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/fetch-assets.yml']
+permissions:
+  contents: write
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Фото
+        run: |
+          set -e
+          U() { echo "https://images.unsplash.com/photo-$1?auto=format&fit=crop&w=1400&q=80&fm=$2"; }
+          C() { echo "https://res.cloudinary.com/iamslwk5/image/upload/w_1200,q_auto,f_jpg/demo-site/$1.jpg"; }
+          get() { [ -s "assets/$1" ] || curl -fsSL --retry 3 -o "assets/$1" "$2" || echo "НЕ СКАЧАНО: $1"; }
+          get auto-diag.jpg     "$(U 1615906655593-ad0386982a0f jpg)"
+          get auto-oil.jpg      "$(U 1702146713858-8e7d1cc29fe8 jpg)"
+          get auto-tire.jpg     "$(U 1723099971299-3789db53604c jpg)"
+          get auto-align.jpg    "$(U 1637640125496-31852f042a60 jpg)"
+          get coffee-hero.png   "$(U 1760175445000-0e01e193d1cd png)"
+          get coffee-cap.jpg    "$(U 1680381792123-676305af82d8 jpg)"
+          get coffee-latte.jpg  "$(U 1586792106950-8f02ebb373c1 jpg)"
+          get coffee-flat.jpg   "$(U 1622088910062-91b0190513a5 jpg)"
+          get coffee-filter.jpg "$(U 1608552265232-3a1e3feb0271 jpg)"
+          get barber-m1.jpg     "$(C barber-m1)"
+          get barber-m2.jpg     "$(C barber-m2)"
+          get barber-m3.jpg     "$(C barber-m3)"
+          get barber-hero.jpg   "$(C barber-hero)"
+          find assets -size 0 -delete
+          ls -la assets
+      - name: Шрифты
+        run: |
+          set -e
+          mkdir -p assets/fonts
+          UA="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36"
+          curl -fsSL -A "$UA" -o /tmp/fonts.css "https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Onest:wght@300;400;500;600;700&family=Unbounded:wght@500;700;900&display=swap"
+          python3 - <<'PY'
+          import re, hashlib, urllib.request, pathlib
+          css = open('/tmp/fonts.css', encoding='utf-8').read()
+          out = pathlib.Path('assets/fonts')
+          for url in sorted(set(re.findall(r'url\((https://fonts\.gstatic\.com/[^)]+)\)', css))):
+              name = hashlib.sha1(url.encode()).hexdigest()[:12] + '.woff2'
+              if not (out / name).exists():
+                  (out / name).write_bytes(urllib.request.urlopen(url).read())
+              css = css.replace(url, name)
+          (out / 'fonts.css').write_text(css, encoding='utf-8')
+          print(len(list(out.iterdir())), 'файлов шрифтов')
+          PY
+      - name: Сохранить в репозиторий
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add assets
+          git diff --cached --quiet && echo "Нечего сохранять" && exit 0
+          git commit -m "Фото и шрифты сохранены в репозиторий (assets/)"
+          git push
