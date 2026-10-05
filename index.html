@@ -1187,7 +1187,11 @@ $('#tabs').addEventListener('keydown',function(e){
 window.addEventListener('resize',function(){markTab(N.id,true)});
 if(document.fonts&&document.fonts.ready)document.fonts.ready.then(function(){markTab(N.id,true);if(ST)refreshSoon()});
 
-setNiche('auto',true);
+/* Ссылка на сферу: index.html?n=barber открывает сайт сразу в этой сфере.
+   Без параметра или с неизвестным значением открывается автосервис. */
+var START='auto';
+try{var qn=(new URLSearchParams(location.search).get('n')||'').toLowerCase();if(Object.prototype.hasOwnProperty.call(NICHES,qn))START=qn}catch(e){}
+setNiche(START,true);
 })();
 </script>
 </body>
