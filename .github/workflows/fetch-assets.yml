@@ -1,4 +1,4 @@
-# Скачивает фото и шрифты в репозиторий, чтобы сайт не зависел от чужих серверов
+# Скачивает фото и шрифты в репозиторий (public/assets), чтобы сайт не зависел от чужих серверов
 # и чтобы ночные проверки видели страницу с настоящими картинками и шрифтами.
 name: Скачать фото и шрифты
 on:
@@ -18,7 +18,7 @@ jobs:
           set -e
           U() { echo "https://images.unsplash.com/photo-$1?auto=format&fit=crop&w=1400&q=80&fm=$2"; }
           C() { echo "https://res.cloudinary.com/iamslwk5/image/upload/w_1200,q_auto,f_jpg/demo-site/$1.jpg"; }
-          get() { [ -s "assets/$1" ] || curl -fsSL --retry 3 -o "assets/$1" "$2" || echo "НЕ СКАЧАНО: $1"; }
+          get() { [ -s "public/assets/$1" ] || curl -fsSL --retry 3 -o "public/assets/$1" "$2" || echo "НЕ СКАЧАНО: $1"; }
           get auto-diag.jpg     "$(U 1615906655593-ad0386982a0f jpg)"
           get auto-oil.jpg      "$(U 1702146713858-8e7d1cc29fe8 jpg)"
           get auto-tire.jpg     "$(U 1723099971299-3789db53604c jpg)"
@@ -32,18 +32,18 @@ jobs:
           get barber-m2.jpg     "$(C barber-m2)"
           get barber-m3.jpg     "$(C barber-m3)"
           get barber-hero.jpg   "$(C barber-hero)"
-          find assets -size 0 -delete
-          ls -la assets
+          find public/assets -size 0 -delete
+          ls -la public/assets
       - name: Шрифты
         run: |
           set -e
-          mkdir -p assets/fonts
+          mkdir -p public/assets/fonts
           UA="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36"
           curl -fsSL -A "$UA" -o /tmp/fonts.css "https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Onest:wght@300;400;500;600;700&family=Unbounded:wght@500;700;900&display=swap"
           python3 - <<'PY'
           import re, hashlib, urllib.request, pathlib
           css = open('/tmp/fonts.css', encoding='utf-8').read()
-          out = pathlib.Path('assets/fonts')
+          out = pathlib.Path('public/assets/fonts')
           for url in sorted(set(re.findall(r'url\((https://fonts\.gstatic\.com/[^)]+)\)', css))):
               name = hashlib.sha1(url.encode()).hexdigest()[:12] + '.woff2'
               if not (out / name).exists():
@@ -52,20 +52,11 @@ jobs:
           (out / 'fonts.css').write_text(css, encoding='utf-8')
           print(len(list(out.iterdir())), 'файлов шрифтов')
           PY
-      - name: Библиотеки движения
-        run: |
-          set -e
-          mkdir -p assets/vendor
-          get() { [ -s "assets/vendor/$1" ] || curl -fsSL --retry 3 -o "assets/vendor/$1" "$2"; }
-          get gsap.min.js          "https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"
-          get ScrollTrigger.min.js "https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"
-          get lenis.min.js         "https://cdn.jsdelivr.net/npm/lenis@1.1.14/dist/lenis.min.js"
-          ls -la assets/vendor
       - name: Сохранить в репозиторий
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add assets
+          git add public/assets
           git diff --cached --quiet && echo "Нечего сохранять" && exit 0
-          git commit -m "Фото и шрифты сохранены в репозиторий (assets/)"
+          git commit -m "Фото и шрифты сохранены в репозиторий (public/assets/)"
           git push
