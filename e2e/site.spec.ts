@@ -105,3 +105,41 @@ test("сайт ничего не отправляет: нет запросов �
   await expect(page.locator(".okb")).toBeVisible();
   expect(foreign).toEqual([]);
 });
+
+// задача 17: на широком экране текст первого экрана барбершопа и кофейни стоит рядом с фото, а не на нём
+for (const [w, h] of [[1440, 900], [1671, 795], [1100, 800]] as const) {
+  test(`первый экран ${w}×${h}: текст не заходит на фото, общая левая линия`, async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: "reduce" });
+    await page.setViewportSize({ width: w, height: h });
+    // границы блока и самих строк заголовка (по тексту, а не по блоку на всю колонку)
+    const rects = () =>
+      page.evaluate(() => {
+        const box = (s: string) => document.querySelector(s)!.getBoundingClientRect();
+        const lines = [...document.querySelectorAll("h1 .ln>span")].map((e) => {
+          const r = document.createRange();
+          r.selectNodeContents(e);
+          return r.getBoundingClientRect();
+        });
+        return {
+          media: [box(".media").left, box(".media").right],
+          kick: box(".kick").left,
+          sub: box(".sub").left,
+          facts: box(".facts").left,
+          left: Math.min(...lines.map((l) => l.left)),
+          right: Math.max(...lines.map((l) => l.right)),
+          lefts: lines.map((l) => l.left),
+        };
+      });
+
+    await page.goto("./barber/");
+    const b = await rects();
+    // фото слева, текст правее с отступом
+    expect(b.left).toBeGreaterThanOrEqual(b.media[1] + 16);
+    for (const x of [...b.lefts, b.kick, b.sub, b.facts]) expect(Math.abs(x - b.left)).toBeLessThanOrEqual(2);
+
+    await page.goto("./coffee/");
+    const c = await rects();
+    // фото справа, текст левее
+    expect(c.right).toBeLessThanOrEqual(c.media[0] - 16);
+  });
+}
