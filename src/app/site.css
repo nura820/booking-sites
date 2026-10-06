@@ -141,15 +141,13 @@ body[data-n="coffee"] .facts{grid-column:1/8;grid-row:3;align-self:end;display:g
 body[data-n="coffee"] .facts li{border-top:1px solid var(--fg);padding-top:12px}
 body[data-n="coffee"] .facts b{font-size:clamp(24px,2.7vw,40px);margin-bottom:4px}
 
-/* барбер: портрет в латунной рамке, антиква заходит на край кадра. Край затемнён, чтобы буквы читались */
+/* барбер: портрет в латунной рамке слева, весь текст правее фото на одной левой линии (колонка 6), на кадр не заходит */
 body[data-n="barber"] .media{grid-column:1/6;grid-row:1/4;align-self:start;margin:10px}
-/* рамка открыта справа: там её замыкает заголовок, линия не режет буквы */
-body[data-n="barber"] .mfr{display:block;border-right:0}
-body[data-n="barber"] .mclip::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(270deg,rgba(18,16,14,.9) 0%,rgba(18,16,14,.66) 22%,rgba(18,16,14,0) 50%),linear-gradient(0deg,rgba(18,16,14,.6) 0%,rgba(18,16,14,0) 34%)}
+body[data-n="barber"] .mfr{display:block}
+body[data-n="barber"] .mclip::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(0deg,rgba(18,16,14,.6) 0%,rgba(18,16,14,0) 34%)}
 body[data-n="barber"] .mtag{left:16px;bottom:12px;padding:0;background:none;color:var(--fg);font-family:var(--disp);font-style:italic;font-size:19px}
-body[data-n="barber"] .hhead{grid-column:5/-1;grid-row:1;align-self:end;padding-top:clamp(10px,3vw,44px)}
+body[data-n="barber"] .hhead{grid-column:6/-1;grid-row:1;align-self:end;padding-top:clamp(10px,3vw,44px)}
 body[data-n="barber"] .kick{color:var(--acc);font-size:15px;letter-spacing:.04em;margin-bottom:14px}
-body[data-n="barber"] h1{text-shadow:0 0 28px rgba(18,16,14,.55)}
 body[data-n="barber"] .hbody{grid-column:6/-1;grid-row:2;padding-top:clamp(20px,2.4vw,34px);display:grid;grid-template-columns:minmax(0,1fr) auto;gap:18px 40px;align-items:end}
 body[data-n="barber"] .sub,body[data-n="barber"] .hact{margin-top:0}
 body[data-n="barber"] .facts{grid-column:6/-1;grid-row:3;align-self:end;display:grid;grid-template-columns:auto auto auto;justify-content:space-between;gap:0 var(--gap);margin-top:clamp(22px,3vw,40px);padding-top:16px}
@@ -169,6 +167,7 @@ body[data-n="barber"] .facts b{font-size:clamp(26px,2.7vw,42px);letter-spacing:0
   body[data-n="barber"] .mfr{border-right:1px solid var(--acc);border-bottom:0}
   body[data-n="auto"] .mtag{right:var(--g)}
   /* подзаголовок-строка стоит над заголовком, обе строки лежат на затемнённом низу кадра */
+  body[data-n="barber"] h1{text-shadow:0 0 28px rgba(18,16,14,.55)}
   body[data-n="barber"] .hhead{margin-top:calc(-58px - var(--h1));padding:0 0 0 26px}
   body[data-n="barber"] .hbody{display:block;padding-top:18px}
   body[data-n="barber"] .hact{margin-top:22px}
