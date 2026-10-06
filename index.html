@@ -425,6 +425,9 @@ body[data-n="coffee"] .sum .tt b{font-weight:400}
 .okb dl>div{display:flex;justify-content:space-between;gap:16px;padding:9px 0;border-top:1px dashed var(--line)}
 .okb dt{color:var(--mut)}
 .okb dd{text-align:right;font-weight:500}
+.okact{display:flex;flex-wrap:wrap;align-items:center;gap:8px 24px}
+.oknote{margin-top:12px}
+@media(max-width:480px){.okact .btn{width:100%;padding:0 16px;font-size:16px}}
 
 /* итог: у каждой сферы свой документ (заказ-наряд, бумажный чек, латунная карточка) */
 .sum h3{font-family:var(--disp);font-weight:var(--dw);font-size:24px;letter-spacing:var(--dls);text-transform:var(--dtt);line-height:1.1;margin-bottom:14px}
@@ -591,6 +594,8 @@ if(window.gsap&&window.ScrollTrigger)gsap.registerPlugin(ScrollTrigger);
 function U(id){return 'https://images.unsplash.com/photo-'+id+'?auto=format&fit=crop&w=1400&q=80'}
 function C(id){return 'https://res.cloudinary.com/iamslwk5/image/upload/w_1200,q_auto,f_auto/demo-site/'+id+'.jpg'}
 
+/* ownerWhatsapp — номер WhatsApp владельца точки, куда уходит заявка: только цифры с кодом страны,
+   например '77011234567'. Пока пусто, WhatsApp откроется без адресата и посетитель сам выберет чат. */
 var NICHES={
  auto:{
   tab:'Автосервис',brand:'Гараж 7',kick:'Автосервис в Астане',h1:['Быстрый','пит-стоп','для города'],
@@ -616,7 +621,7 @@ var NICHES={
   cats:[{n:'Обслуживание',k:['diag','oil','brake']},{n:'Колёса',k:['tire','align']},{n:'Кузов',k:['wash','polish']}],
   feat:['diag','oil','tire','align'],pop:{oil:1},
   branches:[{n:'Левый берег',a:'ул. Примерная, 7',h:'Пн–Сб 9:00–21:00, Вс 10:00–18:00',s:function(d){return d===0?[600,1080]:[540,1260]}},{n:'Правый берег',a:'пр. Образцовый, 21',h:'Ежедневно 9:00–20:00',s:function(){return [540,1200]}}],
-  phone:'+7 700 000 00 02',email:'hello@garage7.example'
+  phone:'+7 700 000 00 02',ownerWhatsapp:'',email:'hello@garage7.example'
  },
  coffee:{
   tab:'Кофейня',brand:'Крема',kick:'Спешелти-кофейня в Астане',h1:['Кофе','готов','к приходу'],
@@ -646,7 +651,7 @@ var NICHES={
   cats:[{n:'Кофе',k:['esp','amer','cap','latte','flat','filt']},{n:'Не кофе',k:['cocoa','matcha']},{n:'Выпечка и еда',k:['croi','cake','sand']}],
   feat:['cap','flat','latte','filt'],pop:{cap:1},
   branches:[{n:'Есиль',a:'пр. Примерный, 10',h:'Ежедневно 8:00–21:00',s:function(){return [480,1260]}},{n:'Сарыарка',a:'ул. Образцовая, 4',h:'Пн–Пт 7:30–20:00, Сб–Вс 9:00–20:00',s:function(d){return d>=1&&d<=5?[450,1200]:[540,1200]}}],
-  phone:'+7 700 000 00 01',email:'hello@crema.example'
+  phone:'+7 700 000 00 01',ownerWhatsapp:'',email:'hello@crema.example'
  },
  barber:{
   tab:'Барбершоп',brand:'Чернило',kick:'Барбершоп в Астане',h1:['Стрижка.','Борода.','Вовремя.'],
@@ -680,7 +685,7 @@ var NICHES={
    {n:'Ерлан М.',m:'Арман',d:'3 недели назад',t:'Попросил фейд по фото. Арман сделал аккуратнее, чем на фото, и показал, как укладывать дома.'},
    {n:'Асхат К.',m:'Данияр',d:'месяц назад',t:'Бритьё опасной бритвой без раздражения. На вечер пятницы записывайтесь за неделю, окна разбирают.'}]},
   branches:[{n:'Есиль',a:'ул. Примерная, 1',h:'Ежедневно 10:00–21:00',s:function(){return [600,1260]}},{n:'Алматинский район',a:'пр. Образцовый, 15',h:'Вт–Вс 11:00–21:00, Пн выходной',s:function(d){return d===1?null:[660,1260]}}],
-  phone:'+7 700 000 00 00',email:'hello@chernilo.example'
+  phone:'+7 700 000 00 00',ownerWhatsapp:'',email:'hello@chernilo.example'
  }
 };
 Object.keys(NICHES).forEach(function(k){NICHES[k].id=k});
@@ -745,6 +750,18 @@ function fixSel(){if(!N.prov)return;var m=prov(S.mid);if(!m)return;Object.keys(S
 function fixTime(){if(S.t!=null&&!slotOk(pid(),S.di,S.t,Math.max(dur(),N.step)))S.t=null}
 function key(){return N.steps[S.step]}
 function whenTxt(){return N.fixedDur?dayShort(S.di)+', к '+fmtT(S.t):dayFull(S.di)+', '+fmtT(S.t)+'–'+fmtMin(N.open+S.t*N.step+dur())}
+/* Заявка владельцу: сайт только открывает WhatsApp с готовым текстом, отправляет сам посетитель. */
+function waText(){
+  var m=N.prov?prov(S.mid):null,L=[(N.qty?'Заказ':'Запись')+' с сайта «'+N.brand+'», № '+S.ticket,'Имя: '+S.name,'Телефон: '+S.phone];
+  if(S.car)L.push('Автомобиль: '+S.car);
+  if(m)L.push('Мастер: '+m.n);
+  L.push(N.sumItems+': '+listTxt(),N.sumTime+': '+whenTxt(),'Где: '+N.branches[0].n+', '+N.branches[0].a,'Оплата: '+(S.pay==='cash'?'наличными на месте':'Kaspi'),'Итого: '+money(total()));
+  return L.join('\n');
+}
+function waLink(){
+  var num=String(N.ownerWhatsapp||'').replace(/\D/g,'');
+  return 'https://wa.me/'+num+'?text='+encodeURIComponent(waText());
+}
 function listTxt(){return keys().map(function(k){return N.items[k].n+(q(k)>1?' × '+q(k):'')}).join(', ')}
 
 /* ====== отрисовка ====== */
@@ -893,7 +910,7 @@ PANEL.contact=function(){
    '<div class="fld"><label>Оплата</label><div class="pays">'+
    '<button type="button" class="pay'+(S.pay==='cash'?' on':'')+'" data-pay="cash" aria-pressed="'+(S.pay==='cash')+'"><i></i><span><b>'+N.cash+'</b><span>Оплата на месте</span></span></button>'+
    '<button type="button" class="pay'+(S.pay==='kaspi'?' on':'')+'" data-pay="kaspi" aria-pressed="'+(S.pay==='kaspi')+'"><i></i><span><b>Kaspi</b><span>Если у бизнеса подключён Kaspi Pay</span></span></button></div></div>'+
-   '<p class="hint">Предоплаты нет. Это демо: данные никуда не отправляются.</p></form>';
+   '<p class="hint">Предоплаты нет. Сайт сам ничего не отправляет: после подтверждения заявку можно отправить в WhatsApp своей кнопкой.</p></form>';
 };
 PANEL.done=function(){
   var m=N.prov?prov(S.mid):null;
@@ -901,7 +918,8 @@ PANEL.done=function(){
    (m?'<div><dt>Мастер</dt><dd>'+m.n+'</dd></div>':'')+
    '<div><dt>'+N.sumItems+'</dt><dd>'+listTxt()+'</dd></div><div><dt>'+N.sumTime+'</dt><dd>'+whenTxt()+'</dd></div>'+
    '<div><dt>Где</dt><dd>'+N.branches[0].n+', '+N.branches[0].a+'</dd></div><div><dt>Гость</dt><dd>'+esc(S.name)+'</dd></div><div><dt>Оплата</dt><dd>'+(S.pay==='cash'?'Наличными':'Kaspi')+'</dd></div>'+
-   '<div><dt>Итого</dt><dd>'+money(total())+'</dd></div></dl><button class="btn" data-again="1">'+(N.qty?'Новый заказ':'Новая запись')+'</button></div>';
+   '<div><dt>Итого</dt><dd>'+money(total())+'</dd></div></dl><div class="okact"><a class="btn" id="wa" href="'+esc(waLink())+'" target="_blank" rel="noopener">Отправить заявку в WhatsApp</a><button class="lnk" data-again="1">'+(N.qty?'Новый заказ':'Новая запись')+'</button></div>'+
+   '<p class="hint oknote">Заявка уйдёт только после вашей отправки в WhatsApp.</p></div>';
 };
 var lastTotal=0,seen={},sumTw=null;
 function renderSum(){
