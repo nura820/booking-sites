@@ -143,3 +143,35 @@ for (const [w, h] of [[1440, 900], [1671, 795], [1100, 800]] as const) {
     expect(c.right).toBeLessThanOrEqual(c.media[0] - 16);
   });
 }
+
+// задача 9: на телефоне первый экран по высоте равен содержимому, пустых тёмных полос нет
+for (const [w, h] of [[390, 844], [375, 667]] as const) {
+  test(`первый экран ${w}×${h}: высота по содержимому, без пустой полосы`, async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: "reduce" });
+    await page.setViewportSize({ width: w, height: h });
+    for (const n of ["auto", "coffee", "barber"]) {
+      await page.goto(`./${n}/`);
+      const m = await page.evaluate(() => {
+        const box = (s: string) => document.querySelector(s)!.getBoundingClientRect();
+        return {
+          minH: getComputedStyle(document.querySelector(".hero")!).minHeight,
+          hero: box(".hero").bottom,
+          facts: box(".facts").bottom,
+          hact: box(".hact").bottom,
+          factsTop: box(".facts").top,
+          media: box(".media").bottom,
+          kick: box(".kick").top,
+          scroll: document.documentElement.scrollWidth - document.documentElement.clientWidth,
+        };
+      });
+      expect(m.minH, n).toMatch(/^(0px|auto)$/);
+      // под последним блоком только нижний отступ секции
+      expect(m.hero - m.facts, n).toBeLessThanOrEqual(40);
+      // между кнопками и цифрами нет провала
+      expect(m.factsTop - m.hact, n).toBeLessThanOrEqual(44);
+      expect(m.scroll, n).toBe(0);
+      // автосервис: подпись и заголовок лежат на затемнённом низу кадра, а не под пустой полосой
+      if (n === "auto") expect(m.media - m.kick).toBeGreaterThanOrEqual(w * 0.2);
+    }
+  });
+}
