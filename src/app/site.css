@@ -179,7 +179,8 @@ body[data-n="barber"] .facts b{font-size:clamp(26px,2.7vw,42px);letter-spacing:0
   body[data-n="auto"] .hero{display:block;min-height:0}
   body[data-n="auto"] .media{position:relative;inset:auto;aspect-ratio:5/4}
   body[data-n="auto"] .mclip::after{background:linear-gradient(0deg,rgba(14,16,17,1) 0%,rgba(14,16,17,0) 50%),linear-gradient(rgba(255,255,255,.05) 1px,transparent 1px) 0 0/44px 44px,linear-gradient(90deg,rgba(255,255,255,.05) 1px,transparent 1px) 0 0/44px 44px}
-  body[data-n="auto"] .htxt{padding:0 var(--g) 36px;margin-top:-28px}
+  /* текст поднят на затемнённый низ кадра, сразу под машину: между видео и заголовком нет пустой тёмной полосы */
+  body[data-n="auto"] .htxt{padding:0 var(--g) 36px;margin-top:calc(-8px - 24vw)}
   body[data-n="auto"] .mtag{bottom:auto;top:14px}
 }
 
