@@ -175,3 +175,32 @@ for (const [w, h] of [[390, 844], [375, 667]] as const) {
     }
   });
 }
+
+// задача 10: на планшете заголовок и кнопка «Записаться» помещаются в первый экран, нижняя плашка их не закрывает
+for (const [w, h] of [[768, 1024], [764, 868]] as const) {
+  test(`первый экран ${w}×${h}: заголовок и кнопка видны без прокрутки`, async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: "reduce" });
+    await page.setViewportSize({ width: w, height: h });
+    for (const n of ["auto", "coffee", "barber"]) {
+      await page.goto(`./${n}/`);
+      await expect(page.locator("#mbar")).toBeHidden();
+      const m = await page.evaluate(() => {
+        const box = (s: string) => document.querySelector(s)!.getBoundingClientRect();
+        return {
+          h1: [box("h1").top, box("h1").bottom],
+          btn: box(".hact .btn").bottom,
+          media: [box(".media").width, box(".media").height],
+          hero: box(".hero").width,
+          scroll: document.documentElement.scrollWidth - document.documentElement.clientWidth,
+        };
+      });
+      expect(m.h1[0], n).toBeGreaterThanOrEqual(0);
+      expect(m.h1[1], n).toBeLessThanOrEqual(h);
+      expect(m.btn, n).toBeLessThanOrEqual(h - 8);
+      // кадр остаётся на всю ширину и не превращается в полоску
+      expect(m.media[0], n).toBeGreaterThanOrEqual(m.hero - 140);
+      expect(m.media[1], n).toBeGreaterThanOrEqual(240);
+      expect(m.scroll, n).toBe(0);
+    }
+  });
+}

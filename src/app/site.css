@@ -184,6 +184,19 @@ body[data-n="barber"] .facts b{font-size:clamp(26px,2.7vw,42px);letter-spacing:0
   body[data-n="auto"] .mtag{bottom:auto;top:14px}
 }
 
+/* планшет 600–900px: кадр ограничен высотой окна, чтобы заголовок и кнопка «Записаться» помещались в первый экран (задача 10) */
+@media(min-width:600px) and (max-width:900px){
+  body[data-n="auto"] .media{aspect-ratio:auto;height:min(80vw,max(320px,calc(100svh - 280px)))}
+  body[data-n="coffee"] .media{aspect-ratio:auto;height:clamp(240px,calc(100svh - 540px),89vw)}
+  body[data-n="barber"] .media{aspect-ratio:auto;height:min(calc(100vw - 2*var(--g) - 20px),max(300px,calc(100svh - 400px)))}
+}
+@media(min-width:600px) and (max-width:760px){
+  /* шапка в две строки выше на 68px */
+  body[data-n="auto"] .media{height:min(80vw,max(320px,calc(100svh - 348px)))}
+  body[data-n="coffee"] .media{height:clamp(240px,calc(100svh - 608px),89vw)}
+  body[data-n="barber"] .media{height:min(calc(100vw - 2*var(--g) - 20px),max(300px,calc(100svh - 468px)))}
+}
+
 /* полоса «сегодня»: одна компактная строка, на телефоне 2 на 2 */
 body[data-n="auto"] .now{padding-top:clamp(16px,2vw,28px)}
 .nowbar{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border-block:1px solid var(--line)}
