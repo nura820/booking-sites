@@ -774,7 +774,7 @@ export function Site({ niches, initial, demo }: SiteProps) {
               <i className="mwipe" />
             </div>
             <i className="mfr" />
-            <span className="mtag">{media.tag}</span>
+            {media.tag ? <span className="mtag">{media.tag}</span> : null}
           </div>
           <div className="htxt">
             <div className="hhead">

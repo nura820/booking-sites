@@ -61,7 +61,8 @@ export interface Niche {
   cta2: string;
   go: string;
   facts: [string, string][];
-  media: { type: "video" | "img"; src: string; poster?: string; fb: string; tag: string };
+  /* tag: подпись под кадром (не поверх видео и фото); без неё подписи нет (задача 11) */
+  media: { type: "video" | "img"; src: string; poster?: string; fb: string; tag?: string };
   tilesH: string;
   tilesP: string;
   bookH: string;

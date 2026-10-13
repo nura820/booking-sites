@@ -118,14 +118,14 @@ body[data-n="auto"] .facts b{font-size:clamp(15px,1.6vw,22px)}
 .media video.ok{opacity:1}
 .mwipe{position:absolute;inset:0;z-index:2;background:var(--acc);transform:scaleX(0);transform-origin:100% 50%;pointer-events:none}
 .mfr{display:none;position:absolute;inset:-10px;border:1px solid var(--acc);pointer-events:none}
-.mtag{position:absolute;left:18px;bottom:16px;z-index:2;font-size:13px;color:#fff;background:rgba(0,0,0,.55);padding:4px 10px;border-radius:var(--r)}
+/* подпись к кадру стоит под ним, поверх видео и фото меток нет (задача 11); сейчас подпись есть только у кофейни */
+.mtag{position:absolute;left:0;right:0;bottom:0;z-index:2;font-size:13px;color:var(--mut)}
 
 /* авто: видео на весь экран, текст поверх */
 body[data-n="auto"] .hero{max-width:none;display:flex;align-items:flex-end;min-height:clamp(560px,calc(100svh - 64px),880px);padding:0;overflow:hidden}
 body[data-n="auto"] .media{position:absolute;inset:0;aspect-ratio:auto}
 body[data-n="auto"] .mclip::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(90deg,rgba(14,16,17,.9) 0%,rgba(14,16,17,.6) 42%,rgba(14,16,17,0) 76%),linear-gradient(0deg,rgba(14,16,17,.92) 0%,rgba(14,16,17,0) 46%),linear-gradient(rgba(255,255,255,.05) 1px,transparent 1px) 0 0/88px 88px,linear-gradient(90deg,rgba(255,255,255,.05) 1px,transparent 1px) 0 0/88px 88px}
 body[data-n="auto"] .htxt{display:block;position:relative;z-index:2;width:100%;max-width:1400px;margin:0 auto;padding:120px var(--g) clamp(28px,4vw,52px)}
-body[data-n="auto"] .mtag{left:auto;right:max(var(--g),calc((100vw - 1400px)/2 + var(--g)));bottom:clamp(28px,4vw,52px);font-family:var(--disp);font-size:10px;letter-spacing:.1em;text-transform:uppercase;background:var(--acc);color:var(--acc-fg)}
 
 /* кофе: сначала набор. Лёгкий заголовок с отступом третьей строки, справа высокий кадр с подписью под волосной линией */
 body[data-n="coffee"] .hhead{grid-column:1/9;grid-row:1}
@@ -145,7 +145,6 @@ body[data-n="coffee"] .facts b{font-size:clamp(24px,2.7vw,40px);margin-bottom:4p
 body[data-n="barber"] .media{grid-column:1/6;grid-row:1/4;align-self:start;margin:10px}
 body[data-n="barber"] .mfr{display:block}
 body[data-n="barber"] .mclip::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(0deg,rgba(18,16,14,.6) 0%,rgba(18,16,14,0) 34%)}
-body[data-n="barber"] .mtag{left:16px;bottom:12px;padding:0;background:none;color:var(--fg);font-family:var(--disp);font-style:italic;font-size:19px}
 body[data-n="barber"] .hhead{grid-column:6/-1;grid-row:1;align-self:end;padding-top:clamp(10px,3vw,44px)}
 body[data-n="barber"] .kick{color:var(--acc);font-size:15px;letter-spacing:.04em;margin-bottom:14px}
 body[data-n="barber"] .hbody{grid-column:6/-1;grid-row:2;padding-top:clamp(20px,2.4vw,34px);display:grid;grid-template-columns:minmax(0,1fr) auto;gap:18px 40px;align-items:end}
@@ -163,9 +162,7 @@ body[data-n="barber"] .facts b{font-size:clamp(26px,2.7vw,42px);letter-spacing:0
   body[data-n="barber"] .htxt{display:block}
   body[data-n="barber"] .media{align-self:stretch;aspect-ratio:1/1}
   body[data-n="barber"] .mclip::after{background:linear-gradient(0deg,rgba(18,16,14,.96) 0%,rgba(18,16,14,.78) 24%,rgba(18,16,14,0) 60%)}
-  body[data-n="barber"] .mtag{left:auto;right:14px;bottom:auto;top:12px}
   body[data-n="barber"] .mfr{border-right:1px solid var(--acc);border-bottom:0}
-  body[data-n="auto"] .mtag{right:var(--g)}
   /* подзаголовок-строка стоит над заголовком, обе строки лежат на затемнённом низу кадра */
   body[data-n="barber"] h1{text-shadow:0 0 28px rgba(18,16,14,.55)}
   body[data-n="barber"] .hhead{margin-top:calc(-58px - var(--h1));padding:0 0 0 26px}
@@ -181,7 +178,6 @@ body[data-n="barber"] .facts b{font-size:clamp(26px,2.7vw,42px);letter-spacing:0
   body[data-n="auto"] .mclip::after{background:linear-gradient(0deg,rgba(14,16,17,1) 0%,rgba(14,16,17,0) 50%),linear-gradient(rgba(255,255,255,.05) 1px,transparent 1px) 0 0/44px 44px,linear-gradient(90deg,rgba(255,255,255,.05) 1px,transparent 1px) 0 0/44px 44px}
   /* текст поднят на затемнённый низ кадра, сразу под машину: между видео и заголовком нет пустой тёмной полосы */
   body[data-n="auto"] .htxt{padding:0 var(--g) 36px;margin-top:calc(-8px - 24vw)}
-  body[data-n="auto"] .mtag{bottom:auto;top:14px}
 }
 
 /* планшет 600–900px: кадр ограничен высотой окна, чтобы заголовок и кнопка «Записаться» помещались в первый экран (задача 10) */
