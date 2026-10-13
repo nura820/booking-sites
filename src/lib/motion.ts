@@ -112,8 +112,9 @@ export function createMotion(): Motion {
         .fromTo(pic, { scale: 1.22 }, { scale: 1, duration: 0.5, clearProps: "transform" }, 0)
         .fromTo("#media .mfr", { scale: 0.94, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.4, clearProps: "transform,opacity" }, 0.1);
     }
-    tl.fromTo("#media .mtag", { opacity: 0 }, { opacity: 1, duration: 0.2, clearProps: "opacity" }, 0.3)
-      .fromTo(".htxt h1 .ln>span", { yPercent: 125 }, { yPercent: 0, duration: 0.45, stagger: 0.05, immediateRender: true, clearProps: "transform" }, 0.5)
+    /* подпись под кадром есть не во всех сферах (задача 11) */
+    if (document.querySelector("#media .mtag")) tl.fromTo("#media .mtag", { opacity: 0 }, { opacity: 1, duration: 0.2, clearProps: "opacity" }, 0.3);
+    tl.fromTo(".htxt h1 .ln>span", { yPercent: 125 }, { yPercent: 0, duration: 0.45, stagger: 0.05, immediateRender: true, clearProps: "transform" }, 0.5)
       .fromTo(".htxt p.ln>span", { y: 40, opacity: 0 }, { y: 0, opacity: 1, duration: 0.45, stagger: 0.1, immediateRender: true, clearProps: "transform,opacity" }, 0.5)
       .fromTo(".facts", { opacity: 0 }, { opacity: 1, duration: 0.3, immediateRender: true, clearProps: "opacity" }, 0.68)
       .fromTo(".hact,.facts li", { y: 16, opacity: 0 }, { y: 0, opacity: 1, duration: 0.4, stagger: 0.04, immediateRender: true, clearProps: "transform,opacity" }, 0.68);

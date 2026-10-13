@@ -204,3 +204,27 @@ for (const [w, h] of [[768, 1024], [764, 868]] as const) {
     }
   });
 }
+
+/* Задача 11: поверх главного видео и фото нет меток; подпись, если есть, стоит под кадром и не заходит на него */
+for (const [w, h] of [[390, 844], [1440, 900]] as const) {
+  test(`первый экран ${w}×${h}: метки поверх кадра нет, подпись только под кадром`, async ({ page }) => {
+    await page.setViewportSize({ width: w, height: h });
+    for (const n of ["auto", "coffee", "barber"]) {
+      await page.goto(`./${n}/`);
+      const tags = page.locator("#media .mtag");
+      if (n === "coffee") {
+        await expect(tags).toHaveCount(1);
+        await expect(tags).toBeVisible();
+        // ждём конца входа (кадр поднимается с поворотом), затем подпись ниже нижнего края кадра
+        await expect
+          .poll(async () => page.locator("#media .mclip").evaluate((c) => {
+            const t = c.parentElement!.querySelector(".mtag")!.getBoundingClientRect();
+            return t.top - c.getBoundingClientRect().bottom;
+          }), { timeout: 5000 })
+          .toBeGreaterThanOrEqual(0);
+      } else {
+        await expect(tags).toHaveCount(0);
+      }
+    }
+  });
+}
