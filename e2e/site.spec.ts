@@ -278,9 +278,10 @@ for (const [w, h] of [[360, 740], [390, 844]] as const) {
     await expect(page.locator("#fn")).toBeVisible();
 
     // вверху страницы вкладки снова видны и переключают сферу
-    // плавная прокрутка к записи после «Далее» длится 0,6 с: ждём её окончания, затем вверх
+    // плавная прокрутка к записи после «Далее» длится 0,6 с: ждём её окончания, затем нажатие на название ведёт на самый верх
     await page.waitForTimeout(900);
-    await page.evaluate(() => window.scrollTo(0, 0));
+    await page.locator("#brand").click();
+    await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(0);
     await expect.poll(async () => (await head()).tabsOpacity).toBe(1);
     await page.locator('[data-tab="coffee"]').click();
     await expect(page.locator("body")).toHaveAttribute("data-n", "coffee");

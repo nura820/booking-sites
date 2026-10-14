@@ -57,17 +57,23 @@ export function createMotion(): Motion {
 
   function scrollToEl(el: Element | null, now?: boolean) {
     if (!el) return;
-    const off = -(($(".top")?.offsetHeight ?? 0) + 12);
+    const top = $(".top");
+    const off = -((top?.offsetHeight ?? 0) + 12);
+    /* на телефоне под шапкой место для полосы вкладок (отступ шапки, задача 6): цель, которая начинается сразу под ней, значит «наверх» */
+    const under = top ? parseFloat(getComputedStyle(top).marginBottom) || 0 : 0;
+    const atTop = (window.pageYOffset || 0) + el.getBoundingClientRect().top + off - under <= 0;
     if (lenis && !now) {
       /* свой твин вместо lenis.scrollTo: его не обрывает недавний обычный скролл пальцем или клавишами */
       const max = Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
       const o = { y: window.pageYOffset || 0 };
-      const to = Math.max(0, Math.min(max, o.y + el.getBoundingClientRect().top + off));
+      const to = atTop ? 0 : Math.max(0, Math.min(max, o.y + el.getBoundingClientRect().top + off));
       stopGo();
       goTw = gsap.to(o, { y: to, duration: 0.6, ease: "power3.out", onUpdate: () => lenis!.scrollTo(o.y, { immediate: true, force: true }), onComplete: () => void (goTw = null) });
-    } else if (lenis) lenis.scrollTo(el as HTMLElement, { offset: off, immediate: true, force: true });
-    else {
-      const y = (window.pageYOffset || 0) + el.getBoundingClientRect().top + off;
+    } else if (lenis) {
+      if (atTop) lenis.scrollTo(0, { immediate: true, force: true });
+      else lenis.scrollTo(el as HTMLElement, { offset: off, immediate: true, force: true });
+    } else {
+      const y = atTop ? 0 : (window.pageYOffset || 0) + el.getBoundingClientRect().top + off;
       window.scrollTo({ top: Math.max(0, y), behavior: RM || now ? "auto" : "smooth" });
     }
   }
