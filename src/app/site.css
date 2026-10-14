@@ -378,8 +378,9 @@ body[data-n="coffee"] .day,body[data-n="coffee"] .slot{border-radius:12px}
 .day small{font-size:12px;line-height:1.3;color:var(--mut);white-space:nowrap}
 .day small i{font-style:normal}
 @media(max-width:700px){.day small i{display:none}}
-/* «сегодня» не помещается в ячейку дня уже 54px: на телефоне короткое «сег.», полное название остаётся в aria-label кнопки */
-@media(max-width:480px){.day span[data-short]{font-size:0}.day span[data-short]::after{content:attr(data-short);font-size:13px}}
+/* «сегодня» не помещается в ячейку дня уже 56px (семь дней на телефоне): там короткое «сег.», полное слово остаётся в aria-label кнопки */
+.day{container-type:inline-size}
+@container (max-width:56px){.day span[data-short]{font-size:0}.day span[data-short]::after{content:attr(data-short);font-size:13px}}
 body[data-n="coffee"] .days{max-width:420px}
 .day:hover:not([disabled]),.slot:hover{border-color:var(--acc2)}
 .day.on,.slot.on{background:var(--acc);color:var(--acc-fg);border-color:var(--acc)}
