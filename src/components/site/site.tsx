@@ -102,6 +102,15 @@ export function Site({ niches, initial, demo }: SiteProps) {
   const N = useMemo(() => (personal ? personalize(base, personal) : base), [base, personal]);
 
   const [bar, setBar] = useState({ navVis: false, heroVis: true, inBook: false });
+  /* на телефоне строка вкладок уходит, как только страницу прокрутили: шапка 65px вместо 133px (задача 6) */
+  const [scrolled, setScrolled] = useState(false);
+  useEffect(() => {
+    if (single) return;
+    const on = () => setScrolled(window.scrollY > 24);
+    on();
+    window.addEventListener("scroll", on, { passive: true });
+    return () => window.removeEventListener("scroll", on);
+  }, [single]);
 
   const tot = total(N, S);
   const ks = keys(N, S);
@@ -500,7 +509,7 @@ export function Site({ niches, initial, demo }: SiteProps) {
                   });
                 }}
               >
-                <span>{i === 0 ? "сегодня" : WD[d.getDay()]}</span>
+                {i === 0 ? <span data-short="сег.">сегодня</span> : <span>{WD[d.getDay()]}</span>}
                 <b>{d.getDate()}</b>
                 <small>
                   {c ? c : "нет"}
@@ -706,7 +715,7 @@ export function Site({ niches, initial, demo }: SiteProps) {
         Перейти к записи
       </a>
 
-      <header className="top">
+      <header className={"top" + (single ? "" : " wt") + (scrolled ? " sc" : "")}>
         <div className="w">
           <a className="brand" href="#top" id="brand" data-pz onClick={anchor("#top")}>
             {N.brand}

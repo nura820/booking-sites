@@ -83,6 +83,17 @@ body[data-n="auto"] .tabs{border-radius:0}
   .top .w{flex-wrap:wrap;height:auto;padding-block:10px}
   .tabs{order:3;width:100%}
   .tabs button{flex:1;height:44px;padding:0 6px;font-size:14px}
+  /* задача 6: в шапке остаётся одна строка 64px, вкладки лежат под ней отдельной полосой и уходят, как только страницу прокрутили (класс .sc ставит скрипт). Место под полосой держит отступ шапки, поэтому вверху страницы вид прежний */
+  .top.wt{margin-bottom:68px;background:none;backdrop-filter:none;-webkit-backdrop-filter:none;border-bottom-color:transparent}
+  /* одна подложка с размытием на шапку и полосу вкладок, без шва; после прокрутки она сжимается до строки шапки */
+  .top.wt::before{content:"";position:absolute;top:0;left:0;right:0;bottom:-69px;z-index:-1;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--line);pointer-events:none;transition:bottom .25s var(--out)}
+  .top.wt.sc::before{bottom:-1px}
+  .top.wt .w{flex-wrap:nowrap;height:64px;padding-block:0}
+  .top.wt .tabs{position:absolute;top:68px;left:var(--g);right:var(--g);width:auto;transition:opacity .25s,transform .25s var(--out)}
+  .top.wt.sc .tabs:not(:focus-within){opacity:0;transform:translateY(-14px);pointer-events:none}
+  /* у барбершопа название набрано крупнее, строка шапки на 1px выше: вкладки стоят там же, где раньше */
+  body[data-n="barber"] .top.wt .w{height:65px}
+  body[data-n="barber"] .top.wt .tabs{top:69px}
 }
 
 /* смена сферы: жёсткая монтажная склейка двумя шторками */
@@ -238,7 +249,8 @@ h2{font-family:var(--disp);font-weight:var(--dw);font-size:var(--h2);line-height
 .tf>span{color:var(--mut);font-size:14px;text-align:right}
 .stars{display:flex;align-items:center;gap:8px;font-size:15px}
 .stars i{font-style:normal;color:var(--acc);letter-spacing:2px}
-.stars span{color:var(--mut)}
+.stars span{color:var(--mut);white-space:nowrap}
+.stars{flex-wrap:wrap;row-gap:0}
 
 /* авто: сплошная сетка с линейками, цена набрана крупнее всего */
 body[data-n="auto"] .tgrid{gap:1px;background:var(--line);border:1px solid var(--line)}
@@ -364,6 +376,8 @@ body[data-n="coffee"] .day,body[data-n="coffee"] .slot{border-radius:12px}
 .day small{font-size:12px;line-height:1.3;color:var(--mut);white-space:nowrap}
 .day small i{font-style:normal}
 @media(max-width:700px){.day small i{display:none}}
+/* «сегодня» не помещается в ячейку дня уже 54px: на телефоне короткое «сег.», полное название остаётся в aria-label кнопки */
+@media(max-width:480px){.day span[data-short]{font-size:0}.day span[data-short]::after{content:attr(data-short);font-size:13px}}
 body[data-n="coffee"] .days{max-width:420px}
 .day:hover:not([disabled]),.slot:hover{border-color:var(--acc2)}
 .day.on,.slot.on{background:var(--acc);color:var(--acc-fg);border-color:var(--acc)}
