@@ -90,7 +90,9 @@ body[data-n="auto"] .tabs{border-radius:0}
   .top.wt.sc::before{bottom:-1px}
   .top.wt .w{flex-wrap:nowrap;height:64px;padding-block:0}
   .top.wt .tabs{position:absolute;top:68px;left:var(--g);right:var(--g);width:auto;transition:opacity .25s,transform .25s var(--out)}
-  .top.wt.sc .tabs:not(:focus-within){opacity:0;transform:translateY(-14px);pointer-events:none}
+  .top.wt.sc .tabs{opacity:0;transform:translateY(-14px);pointer-events:none}
+  /* с клавиатуры вкладки видны, пока на них фокус (касание пальцем фокус-рамку не даёт, поэтому после нажатия полоса всё равно уходит) */
+  .top.wt.sc .tabs:has(:focus-visible){opacity:1;transform:none;pointer-events:auto}
   /* у барбершопа название набрано крупнее, строка шапки на 1px выше: вкладки стоят там же, где раньше */
   body[data-n="barber"] .top.wt .w{height:65px}
   body[data-n="barber"] .top.wt .tabs{top:69px}

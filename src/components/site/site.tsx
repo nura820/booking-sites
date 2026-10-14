@@ -263,9 +263,20 @@ export function Site({ niches, initial, demo }: SiteProps) {
     setS({ ...S, err: {}, ticket: newTicket(), done: true });
     later(() => go("#book"));
   };
+  /* на телефоне кнопки «Далее» и «Назад» стоят под длинным списком: если начало нового шага оказалось выше экрана (под шапкой), страница возвращается к началу записи (задача 6) */
+  const showStepTop = () =>
+    later(() => {
+      const p = panelRef.current;
+      const hb = document.querySelector(".top")?.getBoundingClientRect().bottom ?? 0;
+      if (p && p.getBoundingClientRect().top < hb) go("#book");
+    });
+
   const next = () => {
     if (k === "contact") submit();
-    else if (ok) setStep(S.step + 1);
+    else if (ok) {
+      setStep(S.step + 1);
+      showStepTop();
+    }
   };
 
   const switchTo = (to: NicheId) => {
@@ -499,7 +510,7 @@ export function Site({ niches, initial, demo }: SiteProps) {
                 className={"day" + (S.di === i ? " on" : "")}
                 data-day={i}
                 aria-pressed={S.di === i}
-                aria-label={dayFull(clock, i) + ", " + (c ? c + " " + plur(c, OKN) : "окон нет")}
+                aria-label={(i === 0 ? "сегодня, " : "") + dayFull(clock, i) + ", " + (c ? c + " " + plur(c, OKN) : "окон нет")}
                 disabled={!c}
                 onClick={() => {
                   setS(fixTime(N, clock, { ...S, di: i }));
@@ -948,7 +959,12 @@ export function Site({ niches, initial, demo }: SiteProps) {
                   {navHint(N, S)}
                 </p>
                 <div className="bnav" id="bnav" hidden={S.done}>
-                  <button className="lnk" id="bback" hidden={S.step === 0} onClick={() => S.step > 0 && setStep(S.step - 1)}>
+                  <button className="lnk" id="bback" hidden={S.step === 0} onClick={() => {
+                      if (S.step > 0) {
+                        setStep(S.step - 1);
+                        showStepTop();
+                      }
+                    }}>
                     Назад
                   </button>
                   <button className="btn" id="bnext" disabled={!ok} onClick={next}>

@@ -228,3 +228,69 @@ for (const [w, h] of [[390, 844], [1440, 900]] as const) {
     }
   });
 }
+
+/* Задача 6: телефон 360–390px. Шапка после прокрутки в одну строку, вкладки возвращаются вверху страницы,
+   заголовок шага не прячется под шапкой, подпись «сегодня» помещается в ячейку дня */
+for (const [w, h] of [[360, 740], [390, 844]] as const) {
+  test(`телефон ${w}×${h}: шапка, выбор времени, нижняя панель`, async ({ page }) => {
+    await page.setViewportSize({ width: w, height: h });
+    await page.goto("./auto/");
+    const head = () =>
+      page.evaluate(() => {
+        const t = document.querySelector(".top")!.getBoundingClientRect();
+        const tabs = document.querySelector("#tabs")!;
+        return { bottom: t.bottom, tabsOpacity: Number(getComputedStyle(tabs).opacity), tabsBottom: tabs.getBoundingClientRect().bottom };
+      });
+    // вверху страницы вкладки на месте, под ними начинается первый экран
+    const top0 = await head();
+    expect(top0.tabsOpacity).toBe(1);
+    expect(await page.locator(".hero").evaluate((e) => e.getBoundingClientRect().top)).toBeGreaterThanOrEqual(top0.tabsBottom);
+
+    // кнопка «Записаться» в шапке: страница уезжает к записи, шапка в одну строку и не закрывает заголовок
+    await page.locator("#topcta").click();
+    await expect.poll(async () => (await head()).tabsOpacity).toBe(0);
+    const t1 = await head();
+    expect(t1.bottom).toBeLessThanOrEqual(66);
+    await expect.poll(() => page.locator("#book h2").evaluate((e) => e.getBoundingClientRect().top)).toBeGreaterThanOrEqual(t1.bottom);
+    // спрятанные вкладки не перехватывают нажатия
+    expect(await page.locator("#tabs").evaluate((e) => getComputedStyle(e).pointerEvents)).toBe("none");
+
+    // шаг «Дата и время»: ни одна ячейка дня не обрезает текст, у сегодняшнего дня короткая подпись
+    await page.locator('[data-svc="oil"]').click();
+    await page.locator("#bnext").click();
+    await expect(page.locator(".day").first()).toBeVisible();
+    const days = await page.locator(".day").evaluateAll((ds) => ds.map((d) => d.scrollWidth - d.clientWidth));
+    expect(Math.max(...days)).toBeLessThanOrEqual(0);
+    expect(await page.locator(".day span[data-short]").evaluate((e) => getComputedStyle(e, "::after").content)).toBe('"сег."');
+    await expect(page.locator(".day").first()).toHaveAttribute("aria-label", /^сегодня, /);
+    await expect.poll(() => page.locator("#panel h3").evaluate((e) => e.getBoundingClientRect().top)).toBeGreaterThanOrEqual(t1.bottom);
+
+    // нижняя панель: после выбора времени её «Далее» ведёт к контактам; панель не шире экрана
+    await page.locator(".slot").first().click();
+    // кнопки «Далее» на странице чуть ниже экрана: вместо них внизу стоит панель
+    await page.evaluate(() => window.scrollTo(0, document.querySelector("#bnav")!.getBoundingClientRect().top + window.scrollY - window.innerHeight - 40));
+    await expect(page.locator("#mbar")).toHaveClass(/show/);
+    const bar = await page.locator("#mbar").evaluate((m) => ({ r: m.getBoundingClientRect().right, btn: m.querySelector("#mbn")!.getBoundingClientRect().right, sw: m.scrollWidth - m.clientWidth }));
+    expect(bar.r).toBeLessThanOrEqual(w);
+    expect(bar.btn).toBeLessThanOrEqual(w - 12);
+    expect(bar.sw).toBeLessThanOrEqual(0);
+    await page.locator("#mbn").click();
+    await expect(page.locator("#fn")).toBeVisible();
+
+    // вверху страницы вкладки снова видны и переключают сферу
+    // плавная прокрутка к записи после «Далее» длится 0,6 с: ждём её окончания, затем вверх
+    await page.waitForTimeout(900);
+    await page.evaluate(() => window.scrollTo(0, 0));
+    await expect.poll(async () => (await head()).tabsOpacity).toBe(1);
+    await page.locator('[data-tab="coffee"]').click();
+    await expect(page.locator("body")).toHaveAttribute("data-n", "coffee");
+    expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBeLessThanOrEqual(0);
+  });
+}
+
+test("сайт клиента на телефоне: шапка в одну строку, вкладок нет", async ({ page }) => {
+  await page.setViewportSize({ width: 360, height: 740 });
+  await page.goto("c/primer/");
+  await expect(page.locator(".top")).not.toHaveClass(/wt/);
+  expect(await page.locator(".top").evaluate((e) => e.getBoundingClientRect().height)).toBeLessThanOrEqual(67);
+});
